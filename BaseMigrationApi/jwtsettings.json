@@ -1,0 +1,7 @@
+﻿{
+  "Jwt": {
+    "Key": "yourLongSecretKeyHere123456789012345678901234567890",
+    "Issuer": "UserAccessControl",
+    "Audience": "BaseMigrationAPI"
+  }
+}
