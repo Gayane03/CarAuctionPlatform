@@ -34,6 +34,8 @@ namespace CarAuctionPlatformUI
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return await httpClient.GetAsync("UserAccess/validateToken");
         }
+
+
         public async Task<HttpResponseMessage?> GetCarsView(string token)
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

@@ -102,7 +102,7 @@ namespace BusinessLayer.Autho
                 var principal = tokenHandler.ValidateToken(token, GetTokenValidationParameters(), out SecurityToken validatedToken);
 
                 var userId = Convert.ToInt32(principal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub ||
-                  c.Type == ClaimTypes.NameIdentifier ).Value);
+                                                                                  c.Type == ClaimTypes.NameIdentifier ).Value);
                 return userId;
             }
             catch (Exception)

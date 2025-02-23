@@ -9,9 +9,7 @@ namespace RepositoryLayer
 {
     public class CarRepository : CoreBaseRepository, ICarRepository
     {
-        public CarRepository(IConfiguration configuration) : base(configuration)
-        {
-        }
+        public CarRepository(IConfiguration configuration) : base(configuration){}
 
         public async Task<int> AddNewPriceForCar(int userId, CarPriceRequest carPriceRequest)
         {

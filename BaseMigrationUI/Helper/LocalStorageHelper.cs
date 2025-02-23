@@ -11,8 +11,7 @@ namespace CarAuctionPlatformUI.Helper
 			this.jsRuntime = jsRuntime;
 		}
 		public async Task SaveToken(string tokenType, string token)
-		{
-			
+		{			
 		    await RemoveToken(tokenType);
 		
 			await jsRuntime.InvokeVoidAsync("localStorage.setItem", tokenType, token);

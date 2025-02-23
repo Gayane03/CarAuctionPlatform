@@ -14,11 +14,10 @@ namespace BaseMigrationApi.Controllers
 	[Authorize(Roles = Role.Admin , AuthenticationSchemes = TokenSchemeType.UserAccess)]
 	public class UserAccessController : ControllerBase
 	{
-
 		private readonly ICarService carService;
 		private readonly IJwtTokenHandlerService jwtTokenHandlerService;
 
-		private  int UserId;
+		private int UserId;
         public UserAccessController(
 			IJwtTokenHandlerService jwtTokenHandlerService, 
 			ICarService carService)

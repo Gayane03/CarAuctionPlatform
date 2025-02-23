@@ -20,7 +20,7 @@ namespace BusinessLayer.Helper
 			services.AddScoped<IEmailVerificationService, EmailVerificationService>();
 			services.AddScoped<ICarService, CarService>();
 			services.AddScoped<Profile, MappingProfile>();
-
+			
 			// repository layer
 			services.AddScoped<IRegistrationRepository, RegistrationRepository>();
 			services.AddScoped<ICarRepository, CarRepository>();

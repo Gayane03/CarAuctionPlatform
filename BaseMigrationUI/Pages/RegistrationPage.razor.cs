@@ -127,7 +127,9 @@ namespace CarAuctionPlatformUI.Pages
 			}
             catch (Exception ex)
             {
-				navigationManager?.NavigateTo(Route.NotFound);
+
+				navigationManager!.NavigateTo(Route.Cars);
+				//navigationManager?.NavigateTo(Route.NotFound);
 
 				//navigationManager?.NavigateTo($"/{Route.NotFound}?error={Uri.EscapeDataString(ex.Message)}");
 			}
