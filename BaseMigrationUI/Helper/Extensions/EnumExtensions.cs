@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 
-namespace BaseMigrationUI.Helper.Extensions
+namespace CarAuctionPlatformUI.Helper.Extensions
 {
 	public static class EnumExtensions
 	{

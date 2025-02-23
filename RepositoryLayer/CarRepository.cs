@@ -33,8 +33,13 @@ namespace RepositoryLayer
             var whereConditionBody = $" {nameof(CarResponseDB.Id)} = @carId ";
             var car = await Get<Car, CarResponseDB>(ResponseModelGenerator.GenerateCarResponseDB, parameters,whereConditionBody);
 
-            var carsWithPrice = await GetAll<CarAuction, CarPriceResponseDB>(ResponseModelGenerator.GenerateCarPriceResponse, parameters, whereConditionBody);
-            var carMaxPrice = carsWithPrice.Where(c => c.CarId == carId).Max(c => c.Money);
+            var carsWithPrice = await GetAll<CarAuction, CarPriceResponseDB>(ResponseModelGenerator.GenerateCarPriceResponse);
+       
+             var carMaxPrice = carsWithPrice
+                                .Where(c => c.CarId == carId)
+                                .Select(c => c.Money)
+                                .DefaultIfEmpty(0) // Provide a default value to prevent exception
+                                .Max();
 
             var carResponse =  new CarResponse() {
                 Id = car.Id,
@@ -61,6 +66,6 @@ namespace RepositoryLayer
         }
     }
 
-    file class Car
+    class Car
     { }
 }

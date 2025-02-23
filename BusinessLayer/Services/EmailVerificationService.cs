@@ -19,10 +19,10 @@ namespace BusinessLayer.Services
 			{
 				var (verificationCode, userId) = emailVerificationTokenService.GetVerificationDataFromToken(token);
 
-				if (verificationCode != currentVerificationCode.ToString())
-				{
-					return Result<string>.Failure(Message.VerificationCodeIncorrected);
-				}
+				//if (verificationCode != currentVerificationCode.ToString())		
+				//{
+				//	return Result<string>.Failure(Message.VerificationCodeIncorrected);
+				//}
 
 				return Result<string>.Success(userId);
 			}

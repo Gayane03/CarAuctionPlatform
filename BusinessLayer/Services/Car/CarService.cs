@@ -45,7 +45,7 @@ namespace BusinessLayer.Services.Car
 
                 return Result<CarResponse>.Success(car);    
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return Result<CarResponse>.Failure(Message.SystemError);
             }

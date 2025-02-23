@@ -2,62 +2,54 @@
 @inject NavigationManager Navigation
 
 <style>
-	.header {
-		margin-top: 30px !important;
-		display: flex !important;
-		justify-content: center !important;
-		align-items: center !important;
-		height: 20vh !important;
-		color: #305a77 !important;
-		background-color: #d2d2dc !important;
-	}
+    .header {
+        margin-top: 30px !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        height: 20vh !important;
+        background-image: linear-gradient(to right, #007bff, #6610f2); /* Gradient background */
+        color: white !important; /* White text color */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-	.footer {
-		display: flex !important;
-		justify-content: center !important;
-		align-items: center !important;
-		height: 4vh;
-		color: #305a77 !important;
-		background-color: #d2d2dc !important;
-	}
+        .header h1 {
+            font-size: 2.5em; /* Adjusted font size */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
 
+    .footer {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        height: 4vh;
+        color: #6c757d !important;
+        background-color: #e9ecef !important;
+        border-top: 1px solid #dee2e6;
+        margin-top: 20px;
+    }
 </style>
 
 <MudLayout>
-	<header>
-		<div class="header">
-			<h1>
-				DATABASE MIGRATION
-			</h1>
-		</div>
-	</header>
+    <header>
+        <div class="header">
+            <h1>Car Auction Platform</h1>
+        </div>
+    </header>
 
-	<div class="row">
-		<div class="d-flex justify-content-center" style="margin-top: 24px !important">
-			<MudCard Elevation="2">
-					@Body <!-- This is where the page content will be rendered -->	
-			</MudCard>
-		</div>
-	</div>
+    <div class="row">
+        <div class="d-flex justify-content-center" style="margin-top: 24px !important">
+            <MudCard Elevation="2" Class="pa-8" Style="max-width: 800px; width: 90%;">
+                @Body
+            </MudCard>
+        </div>
+    </div>
 
-
-	<div class="row" style="padding-top: 16px !important">
-		<div class="footer">
-			<footer>
-				<p style="margin: 0">@DateTime.Now.Year</p>
-			</footer>
-		</div>
-	</div>
-
+    <div class="row">
+        <div class="footer">
+            <footer>
+                <p style="margin: 0;">&copy; @DateTime.Now.Year Car Auction Platform</p>
+            </footer>
+        </div>
+    </div>
 </MudLayout>
-
-@code {
-
-	// protected override void OnAfterRender(bool firstRender)
-	// {
-	// 	if (firstRender)
-	// 	{
-	// 		Navigation.NavigateTo(Route.Registration);
-	// 	}
- //    }
-}

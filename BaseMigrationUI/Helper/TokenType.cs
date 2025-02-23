@@ -1,4 +1,4 @@
-﻿namespace BaseMigrationUI.Helper
+﻿namespace CarAuctionPlatformUI.Helper
 {
 	public static class TokenStorageName
 	{

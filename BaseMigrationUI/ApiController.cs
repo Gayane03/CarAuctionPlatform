@@ -2,7 +2,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
-namespace BaseMigrationUI
+namespace CarAuctionPlatformUI
 {
 	public class ApiController 
 	{
@@ -29,22 +29,26 @@ namespace BaseMigrationUI
 			return await httpClient.PostAsJsonAsync("User/login", loginRequest);
 		}
 
-		public async Task<HttpResponseMessage?> GetDatabaseTables(ServerRequest serverRequest, string token)
-		{
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            return await httpClient.PostAsJsonAsync("Migration/getTables", serverRequest);
-        }
-
-		public async Task<HttpResponseMessage?> MigrateTables(MigrationRequest migrationRequest, string token)
-		{
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            return await httpClient.PostAsJsonAsync("Migration/migrateTables", migrationRequest);
-		}
-
         public async Task<HttpResponseMessage?> ValidateToken(string token)
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return await httpClient.GetAsync("UserAccess/validateToken");
         }
+        public async Task<HttpResponseMessage?> GetCarsView(string token)
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return await httpClient.GetAsync("UserAccess/getCars");
+        }
+        public async Task<HttpResponseMessage?> GetCar(string token,int carId)
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return await httpClient.GetAsync($"UserAccess/getCar/{carId}");
+        }
+        public async Task<HttpResponseMessage> AddNewPriceForCar(string token, CarPriceRequest carPriceRequest)
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return await httpClient.PostAsJsonAsync("UserAccess/addNewPrice", carPriceRequest);
+        }
+
     }
 }

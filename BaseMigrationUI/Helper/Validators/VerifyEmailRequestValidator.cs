@@ -1,8 +1,8 @@
-﻿using BaseMigrationUI.Helper.Extensions;
+﻿using CarAuctionPlatformUI.Helper.Extensions;
 using FluentValidation;
 using SharedLibrary.RequestModels;
 
-namespace BaseMigrationUI.Helper.Validators
+namespace CarAuctionPlatformUI.Helper.Validators
 {
 	public class VerifyEmailRequestValidator : AbstractValidator<EmailVerificationCodeRequest>
 	{

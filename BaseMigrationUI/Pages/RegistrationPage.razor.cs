@@ -1,10 +1,11 @@
-﻿using BaseMigrationUI.Helper;
+﻿using CarAuctionPlatformUI;
+using CarAuctionPlatformUI.Helper;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLibrary.RequestModels;
 using SharedLibrary.ResponseModels;
 
-namespace BaseMigrationUI.Pages
+namespace CarAuctionPlatformUI.Pages
 {
 	public partial class RegistrationPage
 	{
@@ -26,7 +27,7 @@ namespace BaseMigrationUI.Pages
 		private const string RegisterText = "Register";
 		private const string LoginText = "Login";
 
-		private Models.RegistrationModel registrationModel = new();
+		private CarAuctionPlatformUI.Models.RegistrationModel registrationModel = new();
 		private EmailVerificationTokenResponse? emailVerificationTokenResponse;
 
 		private bool isRegistrationProcess = true;
@@ -51,7 +52,7 @@ namespace BaseMigrationUI.Pages
 
                     if (isValid)
                     {
-						navigationManager.NavigateTo(Route.BaseMigration);
+						navigationManager.NavigateTo(Route.Cars);
                     }
                 }
 				catch (Exception)
@@ -75,7 +76,6 @@ namespace BaseMigrationUI.Pages
 					{
 						FirstName = registrationModel.FirstName,
 						LastName = registrationModel.LastName,
-						DateOfBirth = registrationModel.DateOfBirth,
 						Country = registrationModel.Country,
 						Email = registrationModel.Email,
 						Password = registrationModel.Password
@@ -122,7 +122,7 @@ namespace BaseMigrationUI.Pages
 					await localStorageHelper!.RemoveToken(TokenStorageName.EmailVerification);
 					await localStorageHelper.SaveToken(TokenStorageName.UserAccess, token);
 
-					navigationManager!.NavigateTo(Route.BaseMigration);
+					navigationManager!.NavigateTo(Route.Cars);
 				}
 			}
             catch (Exception ex)

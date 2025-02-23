@@ -1,5 +1,5 @@
 ﻿@attribute [Route(Route.Registration)]
-@using BaseMigrationUI.Enum
+@using CarAuctionPlatformUI.Enum
 @using SharedLibrary.Enum
 @layout MainLayout;
 @inject RegistrationRequestValidator registrationRequestValidator;
@@ -28,14 +28,7 @@
 							  Immediate="true" />
 			</MudItem>
 
-			<MudItem Class="py-2">
-				<MudDatePicker Class="mud-picker-calendar-container" Label="Date of birth"
-							   @bind-Date="registrationModel.DateOfBirth"
-							   ShowToolbar="false"
-							   ReadOnly="false" />
-			</MudItem>
-
-			<MudItem>
+			<MudItem Class="mt-2">
 				<MudSelect T="Country" @bind-Value="registrationModel.Country" Label="Country" Variant="Variant.Outlined">
 					@foreach (var country in Enum.GetValues(typeof(Country)).Cast<Country>())
 					{
@@ -54,13 +47,15 @@
 						  @bind-Value="registrationModel.Password"
 						  Label="Password"
 						  For="@(() => registrationModel.Password)"
-						  Immediate="true" />
+						  Immediate="true"
+						  InputType="InputType.Password" />
 
 			<MudTextField T="string"
 						  @bind-Value="registrationModel.RepeatPassword"
-						  Label="RepeatPassword"
+						  Label="Repeat Password"
 						  For="@(() => registrationModel.RepeatPassword)"
-						  Immediate="true" />
+						  Immediate="true"
+						  InputType="InputType.Password" />
 			
 
 			<MudCardActions Class="pl-0">
@@ -104,6 +99,7 @@ else
 							  @bind-Value="loginRequest.Password"
 							  Label="Password"
 							  For="@(() => loginRequest.Password)"
+							  InputType="InputType.Password"
 							  Immediate="true" />
 			</MudItem>
 

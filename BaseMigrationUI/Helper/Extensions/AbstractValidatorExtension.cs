@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace BaseMigrationUI.Helper.Extensions
+namespace CarAuctionPlatformUI.Helper.Extensions
 {
 	public static class AbstractValidatorExtension
 	{

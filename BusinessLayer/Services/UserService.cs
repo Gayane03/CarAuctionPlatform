@@ -8,6 +8,7 @@ using RepositoryLayer;
 using SharedLibrary.DbModels.Request;
 using SharedLibrary.RequestModels;
 using SharedLibrary.ResponseModels;
+using System.Security.Cryptography;
 
 namespace BusinessLayer.Services
 {
@@ -85,6 +86,7 @@ namespace BusinessLayer.Services
 
 
 				var userData = mapper.Map<User>(registrationRequest);
+
 				var userId = await registrationRepository.GenerateUser(userData);
 				if (userId == default(int))
 				{

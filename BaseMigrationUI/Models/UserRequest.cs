@@ -1,6 +1,6 @@
 ﻿
 
-namespace BaseMigrationUI.Models
+namespace CarAuctionPlatformUI.Models
 {
 	public class UserRequest
 	{

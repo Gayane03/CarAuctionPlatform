@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace BaseMigrationUI.Enum
+namespace CarAuctionPlatformUI.Enum
 {
 	public enum Messages
 	{

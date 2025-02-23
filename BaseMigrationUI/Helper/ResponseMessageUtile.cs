@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
 
-namespace BaseMigrationUI.Helper
+namespace CarAuctionPlatformUI.Helper
 {
     public class ResponseMessageUtile
     {

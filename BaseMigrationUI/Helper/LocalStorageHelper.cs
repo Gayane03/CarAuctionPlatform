@@ -1,6 +1,6 @@
 ﻿using Microsoft.JSInterop;
 
-namespace BaseMigrationUI.Helper
+namespace CarAuctionPlatformUI.Helper
 {
 	public class LocalStorageHelper
 	{

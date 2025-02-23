@@ -1,8 +1,8 @@
-﻿using BaseMigrationUI.Helper.Extensions;
-using BaseMigrationUI.Models;
+﻿using CarAuctionPlatformUI.Helper.Extensions;
+using CarAuctionPlatformUI.Models;
 using FluentValidation;
 
-namespace BaseMigrationUI.Helper.Validators
+namespace CarAuctionPlatformUI.Helper.Validators
 {
 	public class RegistrationRequestValidator : AbstractValidator<RegistrationModel> 
 	{

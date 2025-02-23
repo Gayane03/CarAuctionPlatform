@@ -1,7 +1,7 @@
-using BaseMigrationUI;
-using BaseMigrationUI.EntryPoints;
-using BaseMigrationUI.Helper;
-using BaseMigrationUI.Helper.Validators;
+using CarAuctionPlatformUI;
+using CarAuctionPlatformUI.EntryPoints;
+using CarAuctionPlatformUI.Helper;
+using CarAuctionPlatformUI.Helper.Validators;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;

@@ -9,10 +9,6 @@
         public string Brand { get; set; } = string.Empty;
         public string Model { get; set; } = string.Empty;
         public int Year { get; set; }
-        //public decimal MaxPrice { get; set; }   
-        //public int Mileage { get; set; }
-        //public string FuelType { get; set; } = string.Empty;  // Petrol, Diesel, Electric, etc.
-        //public string Transmission { get; set; } = string.Empty;  // Manual, Automatic
-        //public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+     
     }
 }

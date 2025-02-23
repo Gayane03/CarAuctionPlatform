@@ -3,16 +3,14 @@ using BusinessLayer.Autho;
 using BusinessLayer.Helper;
 using BusinessLayer.Services.Car;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using SharedLibrary.DbModels.Request;
 using SharedLibrary.RequestModels;
 
 namespace BaseMigrationApi.Controllers
 {
 	
 	[ApiController]
-	[Route("api/[controller]")]
+	[Route("api/[controller]")] 
 	[Authorize(Roles = Role.Admin , AuthenticationSchemes = TokenSchemeType.UserAccess)]
 	public class UserAccessController : ControllerBase
 	{
@@ -20,15 +18,13 @@ namespace BaseMigrationApi.Controllers
 		private readonly ICarService carService;
 		private readonly IJwtTokenHandlerService jwtTokenHandlerService;
 
-		private readonly int UserId;
+		private  int UserId;
         public UserAccessController(
-			IJwtTokenHandlerService jwtTokenHandlerService, ICarService carService)
+			IJwtTokenHandlerService jwtTokenHandlerService, 
+			ICarService carService)
 		{
 		   this.jwtTokenHandlerService = jwtTokenHandlerService;	
 		   this.carService = carService;
-
-            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            UserId = jwtTokenHandlerService.GetUserIdFromToken(token);
         }
 
 
@@ -81,7 +77,11 @@ namespace BaseMigrationApi.Controllers
 
 		[HttpPost("addNewPrice")]
 		public async Task<IActionResult> AddNewPriceForCar([FromBody] CarPriceRequest carPriceRequest)
-		{
+        {
+            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            UserId = jwtTokenHandlerService.GetUserIdFromToken(token);
+
+
             var result = await carService.AddNewPriceForCar(UserId,carPriceRequest);
             if (!result.IsSuccess)
             {

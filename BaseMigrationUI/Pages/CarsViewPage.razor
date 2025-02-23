@@ -1,0 +1,173 @@
+﻿@attribute [Route(Route.Cars)]
+@using SharedLibrary.Enum
+@using SharedLibrary.RequestModels
+@using SharedLibrary.ResponseModels
+@inject NavigationManager navigationManager;
+@inject ApiController apiController;
+@inject ResponseMessageUtile responseMessageUtile;
+@inject LocalStorageHelper localStorageHelper;
+@layout EmptyLayout;
+
+<style>
+    .mud-object-fit-cover {
+        object-fit: cover;
+    }
+</style>
+
+<MudContainer>
+     @if (selectedCar == null)
+    {
+    <MudCard>
+        <MudCardContent>
+            <MudText Typo="Typo.h1" Color="Color.Primary">Car List</MudText>
+            <MudGrid>
+                @if (cars == null)
+                {
+                    <MudProgressCircular Indeterminate />
+                }
+                else
+                {
+                    @foreach (var car in cars)
+                    {
+                        <MudItem xs="12" sm="6" md="4" lg="4" xl="4">
+                            <MudCard Elevation="25" Class="rounded-lg">
+                                <MudCardMedia Image="@car.ImageUrl" Height="250" Class="mud-object-fit-cover rounded-t-lg" />
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h5" Class="mb-2">@car.Name</MudText>
+                                    <MudText Typo="Typo.body2" Class="mb-4">@car.Description</MudText>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="() => SelectCar(car.Id)">Select</MudButton>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    }
+                }
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+    }
+    else
+    {
+        <div style="display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;">
+            <div style="width: 80%; max-width: 800px;">
+                <MudCard Class="mt-4">
+                    <MudCardContent>
+                        <div style="text-align: center;">
+                            <MudText Typo="Typo.h4">Car Details</MudText>
+                            <MudImage Src="@selectedCar.ImageUrl" Height="300" Style="max-width: 100%; object-fit: contain; margin: 20px auto;" />
+                        </div>
+                        <MudText Typo="Typo.body1" Align="Align.Center">Brand: @selectedCar.Brand</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">Model: @selectedCar.Model</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">Year: @selectedCar.Year</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">Fuel Type: @selectedCar.FuelType</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">Transmission: @selectedCar.Transmission</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">Max Price: @selectedCar.MaxPrice</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">Mileage: @selectedCar.Mileage</MudText>
+                    </MudCardContent>
+                </MudCard>
+
+                <MudCard Class="my-2">
+                    <MudCardContent>
+                        <div style="text-align: center;">
+                            <MudText Typo="Typo.h5">Add New Price</MudText>
+                        </div>
+                        <MudNumericField T="decimal" Label="New Price" @bind-Value="newPrice" Variant="Variant.Outlined" Style="width: 100%; margin-top: 10px;" />
+                        <div style="text-align: center; margin-top: 20px;">
+                            <MudButton OnClick="SubmitPrice" Color="Color.Primary" Variant="Variant.Filled">Submit</MudButton>
+                        </div>
+                    </MudCardContent>
+                </MudCard>
+                <MudGrid Justify="Justify.FlexEnd" Class="mb-4">
+                    <MudItem>
+                        <MudButton OnClick="GoToBack" Color="Color.Default" Variant="Variant.Filled">Go Back</MudButton>
+                    </MudItem>
+                </MudGrid>
+               
+            </div>
+        </div>
+    }
+</MudContainer>
+
+@code {
+    private List<CarViewResponse> cars;
+    private CarResponse selectedCar;
+    private decimal newPrice;
+
+    protected override async Task OnInitializedAsync()
+    {
+        selectedCar = null;
+        var token = await GetAccessToken();
+        var result = await apiController.GetCarsView(token);
+
+        cars = await responseMessageUtile.HandleResponse<List<CarViewResponse>>(result);
+    }
+
+
+    private async Task<string> GetAccessToken()
+    {
+        try
+        {
+            return await localStorageHelper.GetToken(TokenStorageName.UserAccess);
+        }
+        catch (Exception ex)
+        {
+            navigationManager.NavigateTo(Route.NotFound);
+        }
+        return null;
+    }
+
+    private async Task SelectCar(int carId)
+    {
+        var token = await GetAccessToken();
+
+        var result = await apiController.GetCar(token,carId);
+        selectedCar = await responseMessageUtile.HandleResponse<CarResponse>(result);
+    }
+
+    private async Task SubmitPrice()
+    {
+        var request = new CarPriceRequest { CarId = selectedCar.Id, Price = newPrice };
+        var token = await GetAccessToken();
+
+        var response = await apiController.AddNewPriceForCar(token, request);
+        var isOkayRequested = await responseMessageUtile.HandleResponse<bool>(response);
+
+        if (isOkayRequested)
+        {
+            await SelectCar(selectedCar.Id); // Refresh car details
+        }
+    }
+
+
+    private async Task GoToBack()
+    {
+        selectedCar= null;
+    }
+
+    // public class CarViewResponse
+    // {
+    //     public int Id { get; set; }
+    //     public string Name { get; set; }
+    //     public string ImageUrl { get; set; }
+    // }
+
+    // public class CarResponse
+    // {
+    //     public int Id { get; set; }
+    //     public string Name { get; set; }
+    //     public string ImageUrl { get; set; }
+    //     public string Description { get; set; }
+    //     public string Brand { get; set; }
+    //     public string Model { get; set; }
+    //     public int Year { get; set; }
+    //     public decimal MaxPrice { get; set; }
+    //     public int Mileage { get; set; }
+    //     public string FuelType { get; set; }
+    //     public string Transmission { get; set; }
+    // }
+
+    // public class CarPriceRequest
+    // {
+    //     public int CarId { get; set; }
+    //     public decimal Price { get; set; }
+    // }
+}
