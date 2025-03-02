@@ -17,8 +17,8 @@ namespace RepositoryLayer
 			parameters.Add($"@{nameof(User.FirstName)}", user.FirstName);
 			parameters.Add($"@{nameof(User.LastName)}", user.LastName);
 			parameters.Add($"@{nameof(User.CountryId)}", user.CountryId);
-			parameters.Add($"@{nameof(User.PasswordHash)}", user.PasswordHash);
 			parameters.Add($"@{nameof(User.Email)}", user.Email);
+			parameters.Add($"@{nameof(User.PasswordHash)}", user.PasswordHash);
 			//parameters.Add($"@{nameof(User.DateOfBirth)}", "2025-02-07 16:06:26.977");
 			parameters.Add($"@{nameof(User.IsActive)}", 0);
 			parameters.Add($"@{nameof(User.RoleId)}", 1);
@@ -52,11 +52,13 @@ namespace RepositoryLayer
 		{
 			var parameters = new Dictionary<string, object>();
 			parameters.Add($"email", loginRequest.Email);
-			parameters.Add($"password", loginRequest.PasswordHash);
 
-			var whereConditionBody = $" {nameof(LoginRequestDB.Email)} = @email AND {nameof(LoginRequestDB.PasswordHash)} = @password ";
+			var whereConditionBody = $" {nameof(LoginRequestDB.Email)} = @email ";
 
-			return await Get<User, LoginResponseDB>(ResponseModelGenerator.GenerateLoginResponse, parameters, whereConditionBody);
+			return await Get<User, LoginResponseDB>(
+				ResponseModelGenerator.GenerateLoginResponse,
+				parameters,
+				whereConditionBody);
 		}
 
 		public async Task<bool> DeleteUserWithId(int userId)
