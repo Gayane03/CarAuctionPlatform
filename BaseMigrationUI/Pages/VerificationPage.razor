@@ -7,6 +7,7 @@
 @inject ResponseMessageUtile responseMessageUtile;
 @inject NavigationManager navigationManager;
 @inject LocalStorageHelper localStorageHelper;
+@inject ISnackbar Snackbar;
 
 <MudForm @ref="form" Validation="verifyEmailRequestValidator.ValidateValue" Model="@verifyEmailRequest">
 	<MudCardContent>
@@ -43,6 +44,8 @@
 
 	private async Task OnSendVerificationCode()
 	{
+		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+
 		try
 		{
 			form?.Validate();
@@ -67,15 +70,17 @@
 				await localStorageHelper.RemoveToken(TokenStorageName.EmailVerification);
 				await localStorageHelper.SaveToken(TokenStorageName.UserAccess, registrationResponse.Token);
 
-				//need go to main page 
+				//need go to main page
 				navigationManager.NavigateTo(Route.Cars);
 			}
 		}
+		catch (SystemException ex)
+		{
+			Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
+		}
 		catch (Exception ex)
 		{
-			// navigationManager.NavigateTo($"/{Route.NotFound}?error={Uri.EscapeDataString(ex.Message)}");
-			navigationManager?.NavigateTo(Route.NotFound);
-
+			Snackbar.Add("Please contact with support team", MudBlazor.Severity.Error);
 		}
 	}
 

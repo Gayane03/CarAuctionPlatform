@@ -10,6 +10,9 @@ namespace CarAuctionPlatformUI.Pages
 	public partial class RegistrationPage
 	{
 		[Inject]
+		private ISnackbar Snackbar { get; set; }
+
+		[Inject]
 		private ApiController? apiController { get; set; }
 
 		[Inject]
@@ -39,29 +42,32 @@ namespace CarAuctionPlatformUI.Pages
 		protected override async Task OnInitializedAsync()
 		{
 
-            await base.OnInitializedAsync();
+			await base.OnInitializedAsync();
+			Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
 
-            var accessToken = await localStorageHelper.GetToken(TokenStorageName.UserAccess);
+			var accessToken = await localStorageHelper.GetToken(TokenStorageName.UserAccess);
 
-			if(!string.IsNullOrEmpty(accessToken))
+			if (!string.IsNullOrEmpty(accessToken))
 			{
 				try
 				{
-                    var response = await apiController.ValidateToken(accessToken);
-                    var isValid = await responseMessageUtile.HandleResponse<bool>(response);
+					var response = await apiController.ValidateToken(accessToken);
+					var isValid = await responseMessageUtile.HandleResponse<bool>(response);
 
-                    if (isValid)
-                    {
+					if (isValid)
+					{
 						navigationManager.NavigateTo(Route.Cars);
-                    }
-                }
-				catch (Exception)
+					}
+				}
+				catch (SystemException ex)
 				{
-					navigationManager.NavigateTo(Route.Registration);
-				}				
-            }
-
-		
+					Snackbar.Add(ex.Message, Severity.Error);
+				}
+				catch (Exception ex)
+				{
+					Snackbar.Add("Please contact with support team", Severity.Error);
+				}
+			}
 		}
 
 		private async Task OnRegister()
@@ -87,20 +93,23 @@ namespace CarAuctionPlatformUI.Pages
 					string? token = emailVerificationTokenResponse?.VerificationToken;
 					if (string.IsNullOrEmpty(token))
 					{
-                        throw new Exception("Token is null.");
-                    }
+						throw new Exception("Token is null.");
+					}
 
-                    await localStorageHelper!.SaveToken(TokenStorageName.EmailVerification, token);
+					await localStorageHelper!.SaveToken(TokenStorageName.EmailVerification, token);
 
 					navigationManager!.NavigateTo(Route.Verification);
 				}
 			}
-            catch (Exception ex)
-            {
-				navigationManager?.NavigateTo($"/{Route.NotFound}?error={Uri.EscapeDataString(ex.Message)}");
-				//navigationManager?.NavigateTo(Route.NotFound);
-            }
-        }
+			catch (SystemException ex)
+			{
+				Snackbar.Add(ex.Message, Severity.Error);
+			}
+			catch (Exception ex)
+			{
+				Snackbar.Add("Please contact with support team", Severity.Error);
+			}
+		}
 
 		private async Task OnLogin()
 		{
@@ -125,13 +134,13 @@ namespace CarAuctionPlatformUI.Pages
 					navigationManager!.NavigateTo(Route.Cars);
 				}
 			}
-            catch (Exception ex)
-            {
-
-				navigationManager!.NavigateTo(Route.Cars);
-				//navigationManager?.NavigateTo(Route.NotFound);
-
-				//navigationManager?.NavigateTo($"/{Route.NotFound}?error={Uri.EscapeDataString(ex.Message)}");
+			catch (SystemException ex)
+			{
+				Snackbar.Add(ex.Message, Severity.Error);
+			}
+			catch (Exception ex)
+			{
+				Snackbar.Add("Please contact with support team", Severity.Error);
 			}
 		}
 
