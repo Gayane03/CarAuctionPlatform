@@ -33,17 +33,47 @@ namespace BusinessLayer.Services.Car
             }
         }
 
-        public async Task<Result<CarResponse>> GetCar(int carId)
+        public async Task<Result<CarResponse>> GetCar(int userId, int carId)
         {
             try
             { 
-                var car =  await carRepository.GetCar(carId);
-                if (car == null)
+                var (car,carsAuctions) =  await carRepository.GetCarsAuctions(carId);
+
+                if (car is null || carsAuctions == null || !carsAuctions.Any())
                 {
                     return Result<CarResponse>.Failure(Message.EmptyCarError);
                 }
 
-                return Result<CarResponse>.Success(car);    
+                var currentUserLastOffer = carsAuctions
+                    .Where(car => car.UserId == userId && car.CarId == carId)
+					.Select(c => c.Money)
+					.DefaultIfEmpty(0) 
+					.Max();
+
+				var carMaxPrice = carsAuctions
+							   .Where(c => c.CarId == carId)
+							   .Select(c => c.Money)
+							   .DefaultIfEmpty(0) 
+							   .Max();
+
+				var carResponse = new CarResponse()
+				{
+					Id = car.Id,
+					Name = car.Name,
+					ImageUrl = car.ImageUrl,
+					Description = car.Description,
+					Brand = car.Brand,
+					Model = car.Model,
+					Year = car.Year,
+					Mileage = car.Mileage,
+					FuelType = car.FuelType,
+					Transmission = car.Transmission,
+					MaxPrice = carMaxPrice,
+					EndDate = car.EndDate,
+                    UserLastPriceOffer = currentUserLastOffer
+				};
+
+				return Result<CarResponse>.Success(carResponse);    
             }
             catch (Exception ex)
             {

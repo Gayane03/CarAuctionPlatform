@@ -65,7 +65,11 @@ namespace BaseMigrationApi.Controllers
 		[HttpGet("getCar/{carId}")]
 		public async Task<IActionResult> GetCar(int carId)
 		{
-            var result = await carService.GetCar(carId);
+			var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+			UserId = jwtTokenHandlerService.GetUserIdFromToken(token);
+
+
+			var result = await carService.GetCar(UserId, carId);
             if (!result.IsSuccess)
             {
                 return BadRequest(result.Error);

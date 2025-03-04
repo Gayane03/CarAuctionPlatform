@@ -14,5 +14,7 @@
         public string FuelType { get; set; } = string.Empty;  // Petrol, Diesel, Electric, etc.
         public string Transmission { get; set; } = string.Empty;  // Manual, Automatic
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime EndDate { get; set; } = DateTime.UtcNow;    
+        public decimal UserLastPriceOffer { get; set; }
     }
 }

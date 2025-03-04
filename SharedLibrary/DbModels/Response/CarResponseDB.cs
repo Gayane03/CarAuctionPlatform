@@ -12,5 +12,6 @@
         public int Mileage { get; set; }
         public string FuelType { get; set; } = string.Empty;
         public string Transmission { get; set; } = string.Empty;
+        public DateTime EndDate { get; set; }   = DateTime.MaxValue;    
     }
 }

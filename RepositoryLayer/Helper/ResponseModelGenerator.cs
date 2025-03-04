@@ -42,6 +42,7 @@ namespace RepositoryLayer.Helper
                 Mileage = reader.GetInt32(reader.GetOrdinal("Mileage")),
                 FuelType = reader.GetString(reader.GetOrdinal("FuelType")),
                 Transmission = reader.GetString(reader.GetOrdinal("Transmission")),
+                EndDate = reader.GetDateTime(reader.GetOrdinal("EndDate"))
             };
         }
 
@@ -54,6 +55,7 @@ namespace RepositoryLayer.Helper
                 var car = new CarPriceResponseDB
                 {
                     CarId = reader.GetInt32(reader.GetOrdinal("CarId")),
+                    UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
                     Money = reader.GetDecimal(reader.GetOrdinal("Money"))
                 };
 

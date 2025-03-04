@@ -24,36 +24,16 @@ namespace RepositoryLayer
             return resultId;
         }
 
-        public async Task<CarResponse> GetCar(int carId)
+        public async Task<(CarResponseDB,List<CarPriceResponseDB>)> GetCarsAuctions(int carId)
         {
             var parameters = new Dictionary<string, object>();
             parameters.Add($"carId", carId);
             var whereConditionBody = $" {nameof(CarResponseDB.Id)} = @carId ";
+
             var car = await Get<Car, CarResponseDB>(ResponseModelGenerator.GenerateCarResponseDB, parameters,whereConditionBody);
-
             var carsWithPrice = await GetAll<CarAuction, CarPriceResponseDB>(ResponseModelGenerator.GenerateCarPriceResponse);
-       
-             var carMaxPrice = carsWithPrice
-                                .Where(c => c.CarId == carId)
-                                .Select(c => c.Money)
-                                .DefaultIfEmpty(0) // Provide a default value to prevent exception
-                                .Max();
-
-            var carResponse =  new CarResponse() {
-                Id = car.Id,
-                Name = car.Name,
-                ImageUrl = car.ImageUrl,
-                Description =car.Description,
-                Brand = car.Brand,
-                Model =car.Model,
-                Year = car.Year,
-                Mileage = car.Mileage,
-                FuelType = car.FuelType,
-                Transmission =car.Transmission ,
-                MaxPrice = carMaxPrice,
-            };
-
-            return carResponse;
+                 
+            return (car, carsWithPrice);
         }
 
         public async Task<List<CarViewResponse>> GetCars()

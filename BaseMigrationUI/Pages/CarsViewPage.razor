@@ -50,41 +50,87 @@
 	}
 	else
 	{
-		<div style="display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;">
-			<div style="width: 80%; max-width: 800px;">
-				<MudCard Class="mt-4">
+
+		<div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(to right, #f0f0f0, #d9e4f5); padding: 20px;">
+			<div style="display: flex; flex-wrap: wrap; gap: 30px; max-width: 1200px;">
+
+				<!-- Car Details Card -->
+				<MudCard Class="elevated-card" Style="flex: 1; max-width: 600px; padding: 20px; border-radius: 12px;">
 					<MudCardContent>
 						<div style="text-align: center;">
-							<MudText Typo="Typo.h4">Car Details</MudText>
-							<MudImage Src="@selectedCar.ImageUrl" Height="300" Style="max-width: 100%; object-fit: contain; margin: 20px auto;" />
+							<MudText Typo="Typo.h4" Class="text-primary">Car Details</MudText>
+							<MudImage Src="@selectedCar.ImageUrl" Height="280" Style="max-width: 100%; object-fit: contain; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);" />
 						</div>
-						<MudText Typo="Typo.body1" Align="Align.Center">Brand: @selectedCar.Brand</MudText>
-						<MudText Typo="Typo.body1" Align="Align.Center">Model: @selectedCar.Model</MudText>
-						<MudText Typo="Typo.body1" Align="Align.Center">Year: @selectedCar.Year</MudText>
-						<MudText Typo="Typo.body1" Align="Align.Center">Engine Type: @selectedCar.FuelType</MudText>
-						<MudText Typo="Typo.body1" Align="Align.Center">Transmission: @selectedCar.Transmission</MudText>
-						<MudText Typo="Typo.body1" Align="Align.Center">Bid: @selectedCar.MaxPrice</MudText>
-						<MudText Typo="Typo.body1" Align="Align.Center">Mileage: @selectedCar.Mileage</MudText>
+						<MudDivider Class="my-2" />
+						<div style="text-align: center; line-height: 1.8;">
+							<MudText Typo="Typo.body1"><b>Brand:</b> @selectedCar.Brand</MudText>
+							<MudText Typo="Typo.body1"><b>Model:</b> @selectedCar.Model</MudText>
+							<MudText Typo="Typo.body1"><b>Year:</b> @selectedCar.Year</MudText>
+							<MudText Typo="Typo.body1"><b>Engine Type:</b> @selectedCar.FuelType</MudText>
+							<MudText Typo="Typo.body1"><b>Transmission:</b> @selectedCar.Transmission</MudText>
+							<MudText Typo="Typo.body1"><b>Bid:</b> $@selectedCar.MaxPrice</MudText>
+							<MudText Typo="Typo.body1"><b>Mileage:</b> @selectedCar.Mileage km</MudText>
+						</div>
 					</MudCardContent>
 				</MudCard>
 
-				<MudCard Class="my-2">
+				<!-- Auction Card -->
+				<MudCard Class="elevated-card" Style="width: 320px; padding: 20px; border-radius: 12px;">
 					<MudCardContent>
 						<div style="text-align: center;">
-							<MudText Typo="Typo.h5">Add New Price</MudText>
+							<MudText Typo="Typo.h5" Class="text-secondary">Auction</MudText>
 						</div>
-						<MudNumericField T="decimal" Label="New Price" @bind-Value="newPrice" Variant="Variant.Outlined" Style="width: 100%; margin-top: 10px;" />
-						<div style="text-align: center; margin-top: 20px;">
-							<MudButton OnClick="SubmitPrice" Color="Color.Primary" Variant="Variant.Filled">Submit</MudButton>
+
+						<MudDivider Class="my-2" />
+
+						<!-- Countdown Timer in Circular Progress -->
+						<div style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px; position: relative;">
+							<MudProgressCircular Indeterminate="false" Color="@BidStatusColor"
+												 Value="@(DateTime.UtcNow < selectedCar.EndDate ? (100 - timeLeft.TotalSeconds / (selectedCar.EndDate - DateTime.UtcNow).TotalSeconds * 100) : 100)"
+												 Style="width: 80px; height: 80px;" />
+							<MudText Typo="Typo.subtitle1" Style="position: absolute; font-weight: bold; text-align: center;">@auctionStatusText</MudText>
 						</div>
+
+						<div style="text-align: center; display: flex; flex-direction: column; gap: 10px;">
+							<!-- Limit Date -->
+							<MudText Style="width: 100%; font-weight: bold;">
+								<b>Limit date:</b> @(selectedCar.EndDate.ToString("yyyy-MM-dd HH:mm:ss"))
+							</MudText>
+
+							<!-- Your Last Bid -->
+							<MudText Style="width: 100%; font-weight: bold;">
+								<b>Your last bid:</b> @selectedCar.UserLastPriceOffer
+							</MudText>
+
+							<!-- Last Bid -->
+							<MudText Style="width: 100%; font-weight: bold;">
+								<b>Last bid:</b> @selectedCar.MaxPrice
+							</MudText>				
+						</div>
+
+						@if (selectedCar.EndDate >= DateTime.UtcNow)
+						{
+							<!-- Input for New Price -->
+							<MudNumericField T="decimal" Label="New Price" @bind-Value="newPrice" Variant="Variant.Outlined" Style="width: 100%; margin-bottom: 10px;" />
+
+							<!-- Submit & Increase Bid Buttons -->
+							<div style="text-align: center; display: flex; flex-direction: column; gap: 10px;">
+								<MudButton OnClick="SubmitPrice" Color="Color.Primary" Variant="Variant.Filled" Style="width: 100%; font-weight: bold;" Disabled="@(timeLeft.TotalSeconds < 0)">Submit Bid</MudButton>
+								<MudButton OnClick="IncreaseBidBy100" Color="Color.Success" Variant="Variant.Filled" Style="width: 100%; font-weight: bold;" Disabled="@(timeLeft.TotalSeconds < 0)">
+									Bid +100
+								</MudButton>
+							</div>
+						}
+						else
+						{
+							<div style="text-align: center; display: flex; flex-direction: column; gap: 10px;">
+								<MudText Style="width: 100%; font-weight: bold;" Color="@BidStatusColor">
+									<b>The car has been sold.</b>
+								</MudText>
+							</div>
+						}
 					</MudCardContent>
 				</MudCard>
-				<MudGrid Justify="Justify.FlexEnd" Class="mb-4">
-					<MudItem>
-						<MudButton OnClick="GoToBack" Color="Color.Default" Variant="Variant.Filled">Go Back</MudButton>
-					</MudItem>
-				</MudGrid>
-
 			</div>
 		</div>
 	}
@@ -95,6 +141,38 @@
 	private CarResponse selectedCar;
 	private decimal newPrice;
 
+	private Color BidStatusColor => (selectedCar.EndDate >= DateTime.UtcNow) ? Color.Success : Color.Error;
+
+	private TimeSpan timeLeft;
+	private string auctionStatusText = "";
+
+	private System.Timers.Timer timer;
+
+
+
+	private void UpdateAuctionStatus()
+	{
+		var now = DateTime.UtcNow;
+		var auctionEnd = selectedCar.EndDate;
+
+		if (now < auctionEnd)
+		{
+			timeLeft = auctionEnd - now;
+			auctionStatusText = $"{timeLeft.Hours:D2}:{timeLeft.Minutes:D2}:{timeLeft.Seconds:D2}";
+			
+		}
+		else
+		{
+			auctionStatusText = $"Auction Finished\nFinal Price: ${selectedCar.MaxPrice}";
+			
+			timer?.Stop(); // Stop updating when auction ends
+		}
+		StateHasChanged(); // Refresh UI
+	}
+
+
+
+
 	protected override async Task OnInitializedAsync()
 	{
 		selectedCar = null;
@@ -104,9 +182,21 @@
 		var result = await apiController.GetCarsView(token);
 
 		cars = await responseMessageUtile.HandleResponse<List<CarViewResponse>>(result);
+
+		if (selectedCar != null)
+		{
+			UpdateAuctionStatus();
+			timer = new System.Timers.Timer(1000); // Update every second
+			timer.Elapsed += (sender, e) => InvokeAsync(UpdateAuctionStatus);
+			timer.Start();
+		}
 	}
 
-
+	private async Task IncreaseBidBy100()
+	{
+		newPrice = selectedCar.MaxPrice + 100; // Set new price to MaxPrice + 100
+		await SubmitPrice(); // Submit the new bid
+	}
 	private async Task<string> GetAccessToken()
 	{
 		try
@@ -121,7 +211,7 @@
 		{
 			Snackbar.Add("Please contact with support team", MudBlazor.Severity.Error);
 		}
-	
+
 		return null;
 	}
 
