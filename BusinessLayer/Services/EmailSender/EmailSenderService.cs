@@ -28,7 +28,7 @@ namespace BusinessLayer.Services.EmailSender
 						IsBodyHtml = false,
 					};
 
-					mailMessage.To.Add("gayane.tsaturyan.2020@gmail.com");
+					mailMessage.To.Add(toEmail);
 
 					await client.SendMailAsync(mailMessage);
 				}
