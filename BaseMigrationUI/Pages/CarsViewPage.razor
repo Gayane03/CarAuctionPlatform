@@ -1,4 +1,5 @@
-﻿@attribute [Route(Route.Cars)]
+﻿@* @attribute [Route(Route.Cars)]*@
+@page "/cars"
 @using SharedLibrary.Enum
 @using SharedLibrary.RequestModels
 @using SharedLibrary.ResponseModels
@@ -7,7 +8,7 @@
 @inject ResponseMessageUtile responseMessageUtile;
 @inject LocalStorageHelper localStorageHelper;
 @inject ISnackbar Snackbar;
-@layout EmptyLayout;
+@layout CarLayout;
 
 <style>
 	.mud-object-fit-cover {
@@ -15,38 +16,51 @@
 	}
 </style>
 
-<MudContainer>
+
 	@if (selectedCar == null)
 	{
-		<MudCard>
-			<MudCardContent>
-				<MudText Typo="Typo.h1" Color="Color.Primary">Car List</MudText>
-				<MudGrid>
-					@if (cars == null)
-					{
-						<MudProgressCircular Indeterminate />
-					}
-					else
-					{
-						@foreach (var car in cars)
-						{
-							<MudItem xs="12" sm="6" md="4" lg="4" xl="4">
-								<MudCard Elevation="25" Class="rounded-lg">
-									<MudCardMedia Image="@car.ImageUrl" Height="250" Class="mud-object-fit-cover rounded-t-lg" />
-									<MudCardContent>
-										<MudText Typo="Typo.h6" Class="mb-1">@car.Name</MudText>
-										<MudText Typo="Typo.body2" Class="mb-2">@car.Brand @car.Model (@car.Year)</MudText>
-										<MudText Typo="Typo.body2" Class="mb-3" Style="height: 60px; overflow: hidden; text-overflow: ellipsis;">@car.Description</MudText>
 
-										<MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="() => SelectCar(car.Id)">Select</MudButton>
-									</MudCardContent>
-								</MudCard>
-							</MudItem>
-						}
-					}
-				</MudGrid>
-			</MudCardContent>
-		</MudCard>
+
+		<MudText Typo="Typo.h1" Color="Color.Primary">@Title</MudText>
+		<MudGrid>
+			@if (cars == null)
+			{
+				<MudProgressCircular Indeterminate />
+			}
+			else
+			{
+				@foreach (var car in cars)
+				{
+					<MudItem xs="12" sm="6" md="4" lg="4" xl="4">
+						<MudCard Elevation="25" Class="rounded-lg">
+							<MudCardMedia Image="@car.ImageUrl" Height="250" Class="mud-object-fit-cover rounded-t-lg">
+
+
+							</MudCardMedia>
+
+
+							<MudGrid Class="mt-1">
+								<MudItem xs="8">
+									<MudText Typo="Typo.h6" Class="mb-1">@car.Name</MudText>
+								</MudItem>
+								<MudItem xs="4" Class="d-flex justify-end">
+									<MudIconButton Icon="@(IsFavorite(car.Id) ? Icons.Material.Filled.Favorite : Icons.Material.Outlined.FavoriteBorder)"
+												   OnClick="() => ToggleFavorite(car.Id)"
+												   Color="@(IsFavorite(car.Id) ? Color.Error : Color.Default)" />
+								</MudItem>
+							</MudGrid>
+							<MudText Typo="Typo.body2" Class="mb-2">@car.Brand @car.Model (@car.Year)</MudText>
+							<MudText Typo="Typo.body2" Class="mb-3" Style="height: 60px;  overflow: hidden; text-overflow: ellipsis;">@car.Description</MudText>
+
+							<MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="() => SelectCar(car.Id)">Select</MudButton>
+
+						</MudCard>
+					</MudItem>
+				}
+			}
+		</MudGrid>
+
+
 	}
 	else
 	{
@@ -67,9 +81,14 @@
 							<MudText Typo="Typo.body1"><b>Model:</b> @selectedCar.Model</MudText>
 							<MudText Typo="Typo.body1"><b>Year:</b> @selectedCar.Year</MudText>
 							<MudText Typo="Typo.body1"><b>Engine Type:</b> @selectedCar.FuelType</MudText>
+							<MudText Typo="Typo.body1"><b>Engine Size:</b> @selectedCar.EngineSize</MudText>
 							<MudText Typo="Typo.body1"><b>Transmission:</b> @selectedCar.Transmission</MudText>
 							<MudText Typo="Typo.body1"><b>Bid:</b> $@selectedCar.MaxPrice</MudText>
 							<MudText Typo="Typo.body1"><b>Mileage:</b> @selectedCar.Mileage km</MudText>
+							<MudText Typo="Typo.body1"><b>Color:</b> @selectedCar.Color</MudText>
+							<MudText Typo="Typo.body1"><b>Interior Color:</b> @selectedCar.Color</MudText>
+							<MudText Typo="Typo.body1"><b>Body Type:</b> @selectedCar.BodyType</MudText>
+							<MudText Typo="Typo.body1"><b>Drive Type:</b> @selectedCar.DriveType</MudText>
 						</div>
 					</MudCardContent>
 				</MudCard>
@@ -104,8 +123,8 @@
 
 							<!-- Last Bid -->
 							<MudText Style="width: 100%; font-weight: bold;">
-								<b>Last bid:</b> @selectedCar.MaxPrice
-							</MudText>				
+								<b>Last max bid:</b> @selectedCar.MaxPrice
+							</MudText>
 						</div>
 
 						@if (selectedCar.EndDate >= DateTime.UtcNow)
@@ -134,54 +153,153 @@
 			</div>
 		</div>
 	}
-</MudContainer>
+
 
 @code {
-	private List<CarViewResponse> cars;
-	private CarResponse selectedCar;
-	private decimal newPrice;
 
-	private Color BidStatusColor => (selectedCar.EndDate >= DateTime.UtcNow) ? Color.Success : Color.Error;
+    [Parameter]
+    public bool ForFavoritePage { get; set; } = false;
 
-	private TimeSpan timeLeft;
-	private string auctionStatusText = "";
+    [Parameter]
+    public string Title { get; set; } = "Cars Auction";
 
-	private System.Timers.Timer timer;
+    private List<CarViewResponse> cars;
+    private CarResponse selectedCar;
+    private decimal newPrice;
+
+    private Color BidStatusColor => (selectedCar.EndDate >= DateTime.UtcNow) ? Color.Success : Color.Error;
+
+    private TimeSpan timeLeft;
+    private string auctionStatusText = "";
+
+    private System.Timers.Timer timer;
+
+    List<int> favoriteCarIds;
+
+    private CarFiltrationRequest carFiltrationRequest = new CarFiltrationRequest();
+
+    string token;
+
+    private async Task ToggleFavorite(int carId)
+    {
+        var isFavorite = false;
+
+        try
+        {
+            if (favoriteCarIds.Contains(carId))
+            {
+                favoriteCarIds.Remove(carId);
+            }
+            else
+            {
+                favoriteCarIds.Add(carId);
+                isFavorite = true;
+            }
+
+            var response = await apiController.ChangeCarFavoriteState(token, new CarFavoriteRequest() { CarId = carId, IsFavorite = isFavorite });
+            await RefreshCars();
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Please contact with support team", MudBlazor.Severity.Error);
+        }
+
+    }
+
+    private bool IsFavorite(int carId)
+    {
+        return favoriteCarIds.Contains(carId);
+    }
 
 
+    private void UpdateAuctionStatus()
+    {
+        var now = DateTime.UtcNow;
+        var auctionEnd = selectedCar.EndDate;
 
-	private void UpdateAuctionStatus()
-	{
-		var now = DateTime.UtcNow;
-		var auctionEnd = selectedCar.EndDate;
+        if (now < auctionEnd)
+        {
+            timeLeft = auctionEnd - now;
+            auctionStatusText = $"{timeLeft.Hours:D2}:{timeLeft.Minutes:D2}:{timeLeft.Seconds:D2}";
 
-		if (now < auctionEnd)
+        }
+        else
+        {
+            auctionStatusText = $"Auction Finished\nFinal Price: ${selectedCar.MaxPrice}";
+
+            timer?.Stop(); // Stop updating when auction ends
+        }
+        StateHasChanged(); // Refresh UI
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+        var queryStrings = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+		carFiltrationRequest = new CarFiltrationRequest(); // Reset filters
+
+		if (queryStrings.TryGetValue("brand", out var brand)) carFiltrationRequest.Brand = brand;
+		if (queryStrings.TryGetValue("model", out var model)) carFiltrationRequest.Model = model;
+		if (queryStrings.TryGetValue("fromYear", out var fromYear))
 		{
-			timeLeft = auctionEnd - now;
-			auctionStatusText = $"{timeLeft.Hours:D2}:{timeLeft.Minutes:D2}:{timeLeft.Seconds:D2}";
-			
+			if (int.TryParse(fromYear, out int fromYearInt))
+			{
+				carFiltrationRequest.FromYear = fromYearInt;
+			}
 		}
-		else
+
+		if (queryStrings.TryGetValue("toYear", out var toYear))
 		{
-			auctionStatusText = $"Auction Finished\nFinal Price: ${selectedCar.MaxPrice}";
-			
-			timer?.Stop(); // Stop updating when auction ends
+			if (int.TryParse(toYear, out int toYearInt))
+			{
+				carFiltrationRequest.ToYear = toYearInt;
+			}
 		}
-		StateHasChanged(); // Refresh UI
+		if (queryStrings.TryGetValue("mileage", out var mileage))
+		{
+			if (int.TryParse(mileage, out int mileageInt))
+			{
+				carFiltrationRequest.Mileage = mileageInt;
+			}
+
+		}
+
+		await RefreshCars(); // Refresh data with new filters
 	}
 
 
 
+	private async Task RefreshCars()
+	{
+		var result = await apiController.GetCarsView(token,carFiltrationRequest);
+
+		cars = await responseMessageUtile.HandleResponse<List<CarViewResponse>>(result);
+
+		if (ForFavoritePage)
+		{
+			cars = cars.Where(cars => cars.IsFavorite).ToList();
+		}
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
 		selectedCar = null;
-		var token = await GetAccessToken();
+		token = await GetAccessToken();
 		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
 
-		var result = await apiController.GetCarsView(token);
+		var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+        var queryStrings = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+			
+        if (queryStrings.TryGetValue("brand", out var brand)) carFiltrationRequest.Brand = brand;
+        if (queryStrings.TryGetValue("model", out var model)) carFiltrationRequest.Model = model;
+        if (queryStrings.TryGetValue("fromYear", out var fromYear)) carFiltrationRequest.FromYear = int.Parse(fromYear);
+        if (queryStrings.TryGetValue("toYear", out var toYear)) carFiltrationRequest.ToYear = int.Parse(toYear);
+        if (queryStrings.TryGetValue("mileage", out var mileage)) carFiltrationRequest.Mileage = int.Parse(mileage);
 
-		cars = await responseMessageUtile.HandleResponse<List<CarViewResponse>>(result);
+		await RefreshCars();
+
+		favoriteCarIds = cars.Where(cars => cars.IsFavorite).Select(car => car.Id).ToList();
 
 		if (selectedCar != null)
 		{
@@ -197,6 +315,7 @@
 		newPrice = selectedCar.MaxPrice + 100; // Set new price to MaxPrice + 100
 		await SubmitPrice(); // Submit the new bid
 	}
+
 	private async Task<string> GetAccessToken()
 	{
 		try

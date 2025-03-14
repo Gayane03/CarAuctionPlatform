@@ -16,5 +16,12 @@
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime EndDate { get; set; } = DateTime.UtcNow;    
         public decimal UserLastPriceOffer { get; set; }
-    }
+
+		public string Color { get; set; }
+		public string InteriorColor { get; set; }
+		public string BodyType { get; set; }
+
+		public string EngineSize { get; set; }
+		public string DriveType { get; set; }
+	}
 }

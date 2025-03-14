@@ -22,6 +22,7 @@ namespace RepositoryLayer
 			//parameters.Add($"@{nameof(User.DateOfBirth)}", "2025-02-07 16:06:26.977");
 			parameters.Add($"@{nameof(User.IsActive)}", 0);
 			parameters.Add($"@{nameof(User.RoleId)}", 1);
+			parameters.Add($"@{nameof(User.PassportNumber)}", user.PassportNumber);
 
 			var userId = await Insert<User>(parameters);
 			return userId;

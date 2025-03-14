@@ -18,6 +18,8 @@ namespace CarAuctionPlatformUI.Helper.Validators
 
 			RuleFor(m => m.Password).IsRequired("Password");
 
+			RuleFor(m => m.PassportNumber).IsRequired("Passport number");
+
 			RuleFor(m => m.RepeatPassword).Equal(m => m.Password).WithMessage(RepeatPasswordErrorMessage);
 		}
 

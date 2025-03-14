@@ -13,5 +13,7 @@ namespace SharedLibrary.DbModels.Request
 		public bool IsActive { get; set; } = false;
 		public int RoleId { get; set; } = 1;
 
+		public string PassportNumber { get; set; }	
+
 	}
 }

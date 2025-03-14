@@ -1,6 +1,5 @@
 ﻿@inherits LayoutComponentBase
-@inject LocalStorageHelper localStorageHelper;
-@inject NavigationManager navigationManager;
+@inject NavigationManager Navigation
 
 
 <style>
@@ -11,18 +10,18 @@
     }
 
     .sidebar {
-        width: 240px;
-        background-color: #343a40;
+       
+        background-color: #343a40; /* This is the line you want to adjust */
         color: #e9ecef;
         padding: 20px;
         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
     }
 
-    .sidebar h2 {
-        margin-bottom: 20px;
-        color: #007bff;
-        font-weight: 600;
-    }
+        .sidebar h2 {
+            margin-bottom: 20px;
+            color: #007bff;
+            font-weight: 600;
+        }
 
     .content {
         flex-grow: 1;
@@ -42,11 +41,11 @@
         text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
 
-    .header h1 {
-        font-size: 2.5em;
-        font-weight: 700;
-        letter-spacing: 1px;
-    }
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
 
     .footer {
         display: flex;
@@ -89,14 +88,14 @@
         transition: background-color 0.3s ease;
     }
 
-    .sidebar .nav-link:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-    }
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
 
-    .sidebar .nav-link.active {
-        background-color: #007bff;
-        color: white;
-    }
+        .sidebar .nav-link.active {
+            background-color: #007bff;
+            color: white;
+        }
 
     /* Adjustments for car list items */
     .car-list-item {
@@ -108,39 +107,39 @@
         width: 32%; /* Keep the width for consistent spacing */
     }
 
-    .car-list-item img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 5px;
-        margin-bottom: 15px; /* Increase bottom margin */
-    }
+        .car-list-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-bottom: 15px; /* Increase bottom margin */
+        }
 
-    /* Adjust image size */
-    .car-list-item img {
-        width: 450px; /* Further increase image width */
-        height: auto;
-    }
+        /* Adjust image size */
+        .car-list-item img {
+            width: 450px; /* Further increase image width */
+            height: auto;
+        }
 
-    /* Adjust button style */
-    .car-list-item button {
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
+        /* Adjust button style */
+        .car-list-item button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
-    .car-list-item button:hover {
-        background-color: #0056b3;
-    }
+            .car-list-item button:hover {
+                background-color: #0056b3;
+            }
 </style>
 
 <div class="layout-container">
     <div class="sidebar">
 
-        <NavMenu />
+        <NuvMenuCar />
     </div>
 
     <div class="content">
@@ -165,4 +164,3 @@
         </div>
     </div>
 </div>
-

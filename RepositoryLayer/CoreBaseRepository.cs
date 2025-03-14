@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using RepositoryLayer.Helper;
+using System.Data.Common;
 using System.Text;
 
 namespace RepositoryLayer
@@ -148,18 +149,17 @@ namespace RepositoryLayer
 					return Convert.ToInt32(insertedId);
 				}
 
-				throw new Exception("User is not insert.");
+				return 0;
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Process is nor correct `{ex.Message}");
+				throw new InvalidDataException();
 			}
 			finally
 			{
 				Dispose();
 			}
 
-			return 0;
 		}
 
 		protected async Task Update<T>(Dictionary<string, object> updatingParameters, Dictionary<string, object>? whereConditionParameters = null,

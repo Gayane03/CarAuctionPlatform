@@ -30,7 +30,7 @@ namespace CarAuctionPlatformUI.Pages
 		private const string RegisterText = "Register";
 		private const string LoginText = "Login";
 
-		private CarAuctionPlatformUI.Models.RegistrationModel registrationModel = new();
+		private Models.RegistrationModel registrationModel = new();
 		private EmailVerificationTokenResponse? emailVerificationTokenResponse;
 
 		private bool isRegistrationProcess = true;
@@ -84,7 +84,8 @@ namespace CarAuctionPlatformUI.Pages
 						LastName = registrationModel.LastName,
 						Country = registrationModel.Country,
 						Email = registrationModel.Email,
-						Password = registrationModel.Password
+						Password = registrationModel.Password,
+						PassportNumber = registrationModel.PassportNumber
 					};
 
 					var response = await apiController!.RegisterUser(registrationRequest);

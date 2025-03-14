@@ -9,5 +9,6 @@ namespace SharedLibrary.RequestModels
 		public Country Country { get; set; } = Country.Armenia;
 		public string Email { get; set; }
 		public string Password { get; set; }
+		public string PassportNumber { get; set; }	
 	}
 }

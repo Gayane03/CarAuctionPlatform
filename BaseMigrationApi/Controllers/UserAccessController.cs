@@ -50,10 +50,13 @@ namespace BaseMigrationApi.Controllers
 
 		//}
 
-		[HttpGet("getCars")]
-		public async Task<IActionResult> GetCars()
+		[HttpPost("getCars")]
+		public async Task<IActionResult> GetCars([FromBody] CarFiltrationRequest? carFiltrationRequest)
 		{
-			var result = await carService.GetCars();
+			var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+			UserId = jwtTokenHandlerService.GetUserIdFromToken(token);
+
+			var result = await carService.GetCars(UserId, carFiltrationRequest);
 			if(!result.IsSuccess)
 			{
 				return BadRequest(result.Error);
@@ -93,5 +96,21 @@ namespace BaseMigrationApi.Controllers
 
             return Ok(result.Value);
         }
+
+		[HttpPost("favoritecar")]
+		public async Task<IActionResult> ChangeCarFavoriteState([FromBody] CarFavoriteRequest carFavoriteRequest)
+		{
+			var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+			UserId = jwtTokenHandlerService.GetUserIdFromToken(token);
+
+
+			var result = await carService.UpdateCarFavoriteState(UserId, carFavoriteRequest);
+			if (!result.IsSuccess)
+			{
+				return BadRequest(result.Error);
+			}
+
+			return Ok(result.Value);
+		}
 	}
 }

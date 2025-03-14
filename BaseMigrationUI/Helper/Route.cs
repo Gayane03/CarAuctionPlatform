@@ -7,5 +7,8 @@
 		public const string NotFound = "/notfound";
 		public const string Verification = "/verification";
 		public const string Cars = "/cars";
+        public const string Information = "/info";
+
+		public const string Favorites = "/favorites";
 	}
 }

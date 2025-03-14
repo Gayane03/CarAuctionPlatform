@@ -12,6 +12,13 @@
         public int Mileage { get; set; }
         public string FuelType { get; set; } = string.Empty;
         public string Transmission { get; set; } = string.Empty;
-        public DateTime EndDate { get; set; }   = DateTime.MaxValue;    
-    }
+        public DateTime EndDate { get; set; }   = DateTime.MaxValue;
+
+		public string Color { get; set; }
+		public string InteriorColor { get; set; }
+		public string BodyType { get; set; }
+
+		public string EngineSize { get; set; }
+		public string DriveType { get; set; }
+	}
 }

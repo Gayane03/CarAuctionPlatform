@@ -28,6 +28,15 @@
 							  Immediate="true" />
 			</MudItem>
 
+			<MudItem>
+				<MudTextField T="string"
+							  @bind-Value="registrationModel.PassportNumber"
+							  Label="Passport number"
+							  For="@(() => registrationModel.PassportNumber)"
+							  Immediate="true" />
+			</MudItem>
+
+
 			<MudItem Class="mt-2">
 				<MudSelect T="Country" @bind-Value="registrationModel.Country" Label="Country" Variant="Variant.Outlined">
 					@foreach (var country in Enum.GetValues(typeof(Country)).Cast<Country>())

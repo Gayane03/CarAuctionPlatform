@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using SharedLibrary.DbModels.Response;
-using SharedLibrary.ResponseModels;
 
 namespace RepositoryLayer.Helper
 {
@@ -42,36 +41,75 @@ namespace RepositoryLayer.Helper
                 Mileage = reader.GetInt32(reader.GetOrdinal("Mileage")),
                 FuelType = reader.GetString(reader.GetOrdinal("FuelType")),
                 Transmission = reader.GetString(reader.GetOrdinal("Transmission")),
-                EndDate = reader.GetDateTime(reader.GetOrdinal("EndDate"))
-            };
+                EndDate = reader.GetDateTime(reader.GetOrdinal("EndDate")),
+                Color = reader.GetString(reader.GetOrdinal("Color")),
+                InteriorColor = reader.GetString(reader.GetOrdinal("InteriorColor")),
+				BodyType = reader.GetString(reader.GetOrdinal("BodyType")),
+				EngineSize = reader.GetString(reader.GetOrdinal("EngineSize")),
+				DriveType = reader.GetString(reader.GetOrdinal("DriveType")),
+			};
         }
 
-        public static List<CarPriceResponseDB> GenerateCarPriceResponse(SqlDataReader reader)
+		public static List<CarPriceResponseDB> GenerateCarPriceResponse(SqlDataReader reader)
+		{
+			var carsWithMoney = new List<CarPriceResponseDB>();
+
+			do
+			{
+				var car = new CarPriceResponseDB
+				{
+					CarId = reader.GetInt32(reader.GetOrdinal("CarId")),
+					UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+					Money = reader.GetDecimal(reader.GetOrdinal("Money")),
+					IsFavorite = reader.GetBoolean(reader.GetOrdinal("IsFavorite"))
+				};
+
+				carsWithMoney.Add(car);
+			} while (reader.Read());
+
+			return carsWithMoney;
+		}
+
+
+
+		public static List<CarResponseDB> GenerateCarResponsesDB(SqlDataReader reader)
         {
-            var carsWithMoney = new List<CarPriceResponseDB>();
+            var carsWithMoney = new List<CarResponseDB>();
 
             do
             {
-                var car = new CarPriceResponseDB
-                {
-                    CarId = reader.GetInt32(reader.GetOrdinal("CarId")),
-                    UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
-                    Money = reader.GetDecimal(reader.GetOrdinal("Money"))
-                };
+                var car = GenerateCarResponseDB(reader);
+				
+				carsWithMoney.Add(car);
 
-                carsWithMoney.Add(car);
             } while (reader.Read());
 
             return carsWithMoney;
         }
-        public static List<CarViewResponse> GetCarsViews(SqlDataReader reader)
+
+		public static CarPriceResponseDB GenerateCarForFavorite(SqlDataReader reader)
+		{
+			
+				var car = new CarPriceResponseDB
+				{
+					CarId = reader.GetInt32(reader.GetOrdinal("CarId")),
+					UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+					Money = reader.GetDecimal(reader.GetOrdinal("Money")),
+					IsFavorite = reader.GetBoolean(reader.GetOrdinal("IsFavorite"))
+				};
+
+		
+
+			return car;
+		}
+		public static List<CarViewResponseDB> GetCarsViews(SqlDataReader reader)
         {
-            var cars = new List<CarViewResponse>();
+            var cars = new List<CarViewResponseDB>();
 
             do
             {
-                var car = new CarViewResponse
-                {
+                var car = new CarViewResponseDB
+				{
                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
                     Name = reader.GetString(reader.GetOrdinal("Name")),
                     ImageUrl = reader.GetString(reader.GetOrdinal("ImageUrl")),

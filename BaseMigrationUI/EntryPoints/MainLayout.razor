@@ -2,54 +2,163 @@
 @inject NavigationManager Navigation
 
 <style>
-    .header {
-        margin-top: 30px !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        height: 20vh !important;
-        background-image: linear-gradient(to right, #007bff, #6610f2); /* Gradient background */
-        color: white !important; /* White text color */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
 
-        .header h1 {
-            font-size: 2.5em; /* Adjusted font size */
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
+	.layout-container {
+		display: flex;
+		height: 100vh;
+		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+	}
 
-    .footer {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        height: 4vh;
-        color: #6c757d !important;
-        background-color: #e9ecef !important;
-        border-top: 1px solid #dee2e6;
-        margin-top: 20px;
-    }
+
+
+	.sidebar {
+	
+		background-color: #343a40; /* This is the line you want to adjust */
+		color: #e9ecef;
+		padding: 20px;
+		box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+		width: 240px;
+	
+	}
+
+
+
+		.sidebar h2 {
+			margin-bottom: 20px;
+			color: #007bff; /* Primary color for emphasis */
+
+			font-weight: 600;
+		}
+
+
+
+	.content {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		padding-top: 0;
+	}
+
+
+
+	.header {
+		margin-top: 0; /* Remove top margin for cleaner look */
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 15vh; /* Reduce header height */
+
+		background: linear-gradient(135deg, #007bff, #6610f2); /* Gradient background */
+
+		color: white;
+		text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Add text shadow */
+	}
+
+
+
+		.header h1 {
+			font-size: 2.5em; /* Larger header text */
+
+			font-weight: 700;
+			letter-spacing: 1px;
+		}
+
+
+
+	.footer {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 5vh; /* Adjust footer height */
+
+		background-color: #343a40; /* Match sidebar background */
+
+		color: #e9ecef;
+		font-size: 0.9em;
+	}
+
+
+
+	.content-body {
+		flex-grow: 1;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 20px;
+		background-color: #f8f9fa; /* Light background for content */
+	}
+
+
+
+	.mud-card {
+		width: 80%; /* Adjust card width */
+
+		max-width: 1200px; /* Max width for large screens */
+
+		padding: 30px;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+
+		border-radius: 8px; /* Rounded corners */
+	}
+
+
+
+	.mud-card-content {
+		width: 100%;
+	}
+
+
+
+	.sidebar .nav-link {
+		display: block;
+		padding: 10px 15px;
+		color: #e9ecef;
+		text-decoration: none;
+		border-radius: 5px;
+		transition: background-color 0.3s ease;
+	}
+
+
+
+		.sidebar .nav-link:hover {
+			background-color: rgba(255, 255, 255, 0.1);
+		}
+
+
+
+		.sidebar .nav-link.active {
+			background-color: #007bff;
+			color: white;
+		}
+
 </style>
 
-<MudLayout>
-    <header>
-        <div class="header">
-            <h1>Car Auction Platform</h1>
-        </div>
-    </header>
 
-    <div class="row">
-        <div class="d-flex justify-content-center" style="margin-top: 24px !important">
-            <MudCard Elevation="2" Class="pa-8" Style="max-width: 800px; width: 90%;">
-                @Body
-            </MudCard>
-        </div>
-    </div>
+<div class="layout-container">
+	<div class="sidebar">
+		<NuvMenu />
+	</div>
 
-    <div class="row">
-        <div class="footer">
-            <footer>
-                <p style="margin: 0;">&copy; @DateTime.Now.Year Car Auction Platform</p>
-            </footer>
-        </div>
-    </div>
-</MudLayout>
+	<div class="content">
+		<header>
+			<div class="header">
+				<h1>Car Auction Platform</h1>
+			</div>
+		</header>
+
+		<div class="content-body">
+			<MudCard Elevation="2" Class="mud-card">
+				<MudCardContent Class="mud-card-content">
+					@Body
+				</MudCardContent>
+			</MudCard>
+		</div>
+
+		<div class="footer">
+			<footer>
+				<p style="margin: 0">© @DateTime.Now.Year</p>
+			</footer>
+		</div>
+	</div>
+</div>

@@ -10,5 +10,6 @@
 		public const string EmptyCarsListError = "There are not cars in table.";
         public const string EmptyCarError = "There is not car wit current data.";
 		public const string PriceAddingError = "There is problem with adding  car new price";
+		public const string PassportNumberError = "Current passport number is in the system.";
     }
 }

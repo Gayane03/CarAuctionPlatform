@@ -1,0 +1,66 @@
+﻿@attribute [Route(Route.Information)]
+@layout MainLayout;
+
+<MudContainer MaxWidth="MaxWidth.Large">
+    <MudText Typo="Typo.h4" GutterBottom="true">Car Auction Platform</MudText>
+
+    <MudText Typo="Typo.body1" GutterBottom="true">
+        Welcome to our Car Auction Platform, where buyers and sellers connect to trade vehicles efficiently and securely. This page provides an overview of how the platform works and key features to enhance your auction experience.
+    </MudText>
+
+    <MudExpansionPanels>
+        <MudExpansionPanel Text="How It Works">
+            <MudText Typo="Typo.body2" GutterBottom="true">
+                Our platform facilitates seamless car auctions through the following steps:
+            </MudText>
+            <MudList T="string">
+                <MudListItem><p>Vehicle Listing: Sellers can list their vehicles with detailed specifications and images.</p></MudListItem>
+                <MudListItem><p>Bid Placement: Buyers place bids in real-time, competing to secure the vehicle.</p></MudListItem>
+                <MudListItem><p>Reserve Price: Sellers can set a minimum price to ensure fair deals.</p></MudListItem>
+                <MudListItem><p>Auction Closing: The highest bidder wins once the auction ends.</p></MudListItem>
+                <MudListItem><p>Secure Payment & Transfer: Transactions are processed securely, ensuring smooth ownership transfer.</p></MudListItem>
+            </MudList>
+        </MudExpansionPanel>
+
+        <MudExpansionPanel Text="Key Features">
+            <MudText Typo="Typo.body2" GutterBottom="true">
+                Our platform offers various features to enhance your experience:
+            </MudText>
+            <MudList T="string">
+                <MudListItem><p>Real-Time Bidding: Experience live auctions with instant bid updates.</p></MudListItem>
+                <MudListItem><p>Vehicle History Reports: Get access to verified history reports before placing bids.</p></MudListItem>
+                <MudListItem><p>Seller Verification: Ensuring trusted transactions with verified sellers.</p></MudListItem>
+                <MudListItem><p>Automated Notifications: Stay updated on bid status, auction results, and more.</p></MudListItem>
+                <MudListItem><p>Secure Payments: Multiple payment options with escrow services for added security.</p></MudListItem>
+            </MudList>
+        </MudExpansionPanel>
+
+        <MudExpansionPanel Text="Buyer & Seller Guidelines">
+            <MudText Typo="Typo.body2" GutterBottom="true">
+                Important guidelines to ensure a smooth auction experience:
+            </MudText>
+            <MudList T="string">
+                <MudListItem><p>Buyers: Ensure you review vehicle details before placing a bid.</p></MudListItem>
+                <MudListItem><p>Sellers: Provide accurate descriptions and high-quality images of your vehicle.</p></MudListItem>
+                <MudListItem><p>Payments: Complete transactions within the stipulated time to avoid penalties.</p></MudListItem>
+                <MudListItem><p>Disputes: Use our support center for dispute resolution if needed.</p></MudListItem>
+            </MudList>
+        </MudExpansionPanel>
+
+        <MudExpansionPanel Text="Support & Contact">
+            <MudText Typo="Typo.body2" GutterBottom="true">
+                Need assistance? Our support team is here to help:
+            </MudText>
+            <MudList T="string">
+                <MudListItem>Email: haykdav2000@mail.ru</MudListItem>
+                <MudListItem>Phone: +(374) 99 77 27 07</MudListItem>
+                <MudListItem>Live Chat: Available during business hours</MudListItem>
+                <MudListItem>FAQs: Visit our help center for commonly asked questions.</MudListItem>
+            </MudList>
+        </MudExpansionPanel>
+    </MudExpansionPanels>
+</MudContainer>
+
+@code {
+
+}

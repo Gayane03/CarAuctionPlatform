@@ -42,6 +42,36 @@
 	private EmailVerificationCodeRequest verifyEmailRequest = new();
 	private RegistrationResponse? registrationResponse;
 
+
+	protected override async Task OnInitializedAsync()
+	{
+		var accessToken = await localStorageHelper.GetToken(TokenStorageName.UserAccess);
+
+		if (!string.IsNullOrEmpty(accessToken))
+		{
+			try
+			{
+				var response = await apiController.ValidateToken(accessToken);
+				var isValid = await responseMessageUtile.HandleResponse<bool>(response);
+
+				if (isValid)
+				{
+					navigationManager.NavigateTo(Route.Cars);
+				}
+			}
+			catch (SystemException ex)
+			{
+				Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
+			}
+			catch (Exception ex)
+			{
+				Snackbar.Add("Please contact with support team", MudBlazor.Severity.Error);
+			}
+		}
+		
+	
+	}
+
 	private async Task OnSendVerificationCode()
 	{
 		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;

@@ -8,7 +8,7 @@ using RepositoryLayer;
 using SharedLibrary.DbModels.Request;
 using SharedLibrary.RequestModels;
 using SharedLibrary.ResponseModels;
-using System.Security.Cryptography;
+using System.Data.Common;
 
 namespace BusinessLayer.Services
 {
@@ -77,7 +77,7 @@ namespace BusinessLayer.Services
 					if(userActiveData.IsActive)
 					{
 						return Result<EmailVerificationTokenResponse>.Failure(Message.EmailActivityError);
-					}
+					}	
 					else
 					{
 						await registrationRepository.DeleteUserWithId(userActiveData.Id);
@@ -97,6 +97,10 @@ namespace BusinessLayer.Services
 				await emailSenderService.SendEmailAsync(registrationRequest.Email, verificationCode);
 
 				return Result<EmailVerificationTokenResponse>.Success(new EmailVerificationTokenResponse(emailVerificationToken));
+			}
+			catch(InvalidDataException ex)
+			{
+				return Result<EmailVerificationTokenResponse>.Failure(Message.PassportNumberError);
 			}
 			catch (Exception ex)
 			{

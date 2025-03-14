@@ -5,5 +5,6 @@
 		public int CarId { get; set; }
 		public int UserId { get; set; }
 		public decimal Money { get; set; }
+		public bool IsFavorite { get; set; }	
 	}
 }

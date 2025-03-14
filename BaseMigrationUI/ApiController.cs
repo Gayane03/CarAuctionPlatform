@@ -36,10 +36,10 @@ namespace CarAuctionPlatformUI
         }
 
 
-        public async Task<HttpResponseMessage?> GetCarsView(string token)
+        public async Task<HttpResponseMessage?> GetCarsView(string token, CarFiltrationRequest? carFiltrationRequest)
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            return await httpClient.GetAsync("UserAccess/getCars");
+            return await httpClient.PostAsJsonAsync("UserAccess/getCars", carFiltrationRequest);
         }
         public async Task<HttpResponseMessage?> GetCar(string token,int carId)
         {
@@ -52,5 +52,13 @@ namespace CarAuctionPlatformUI
             return await httpClient.PostAsJsonAsync("UserAccess/addNewPrice", carPriceRequest);
         }
 
-    }
+
+		public async Task<HttpResponseMessage> ChangeCarFavoriteState(string token, CarFavoriteRequest carFavoriteRequest)
+		{
+			httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			return await httpClient.PostAsJsonAsync("UserAccess/favoritecar", carFavoriteRequest);
+		}
+
+
+	}
 }
