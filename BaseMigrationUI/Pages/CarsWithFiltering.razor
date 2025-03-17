@@ -1,0 +1,58 @@
+﻿@using SharedLibrary.RequestModels
+@attribute [Route(Route.CarsFiltering)]
+@layout CarLayout;
+
+<CarsViewPage ForFavoritePage="false" CarFiltrationRequest="carFiltrationRequest" @ref="carsViewPageRef"></CarsViewPage>
+
+
+@code{
+	private CarFiltrationRequest carFiltrationRequest = new CarFiltrationRequest();
+	private CarsViewPage? carsViewPageRef;
+	private bool isFirstRender = true;
+	[Parameter]
+	[SupplyParameterFromQuery]
+	public string? Brand { get; set; }
+
+	[Parameter]
+	[SupplyParameterFromQuery]
+	public string? Model { get; set; }
+
+	[Parameter]
+	[SupplyParameterFromQuery]
+	public int? FromYear { get; set; }
+
+	[Parameter]
+	[SupplyParameterFromQuery]
+	public int? ToYear { get; set; }
+
+	[Parameter]
+	[SupplyParameterFromQuery]
+	public int? Mileage { get; set; }
+
+
+	protected override async Task OnParametersSetAsync()
+	{
+		carFiltrationRequest ??= new CarFiltrationRequest();
+
+		carFiltrationRequest.Brand = Brand ?? string.Empty;
+		carFiltrationRequest.Model = Model ?? string.Empty;
+		carFiltrationRequest.FromYear = FromYear ?? 0;
+		carFiltrationRequest.ToYear = ToYear ?? 0;
+		carFiltrationRequest.Mileage = Mileage ?? 0;
+
+		if (carsViewPageRef != null)
+		{
+			await carsViewPageRef.RefreshCars();
+		}
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender && carsViewPageRef != null)
+		{
+			await carsViewPageRef.RefreshCars();
+		}
+	}
+
+
+}

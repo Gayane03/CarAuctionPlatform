@@ -5,8 +5,8 @@ namespace SharedLibrary.RequestModels
 	{
 		public string? Brand { get; set; }
 		public string? Model { get; set; }
-		public int? FromYear { get; set; }
-		public int? ToYear { get; set; }
+		public int? FromYear { get; set; } = 2000;
+		public int? ToYear { get; set; } = DateTime.Now.Year;	
 		public int? Mileage { get; set; }
 
 	}

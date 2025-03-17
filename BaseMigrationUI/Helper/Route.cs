@@ -10,5 +10,6 @@
         public const string Information = "/info";
 
 		public const string Favorites = "/favorites";
+		public const string CarsFiltering = "/carsfiltering";
 	}
 }

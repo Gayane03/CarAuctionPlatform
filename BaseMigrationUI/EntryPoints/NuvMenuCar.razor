@@ -3,115 +3,133 @@
 @inject NavigationManager navigation;
 
 <style>
-    .original-menu {
-        background-color: #343a40; /* Dark background */
-        color: #e9ecef; /* Light text */
-        width: 240px; /* Consistent sidebar width */
-        height: 100vh; /* Full height */
-        display: flex;
-        flex-direction: column;
-        padding: 20px 0; /* Vertical padding */
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    }
+	.original-menu {
+		background-color: #343a40; /* Dark background */
+		color: #e9ecef; /* Light text */
+		width: 240px; /* Consistent sidebar width */
+		height: 100vh; /* Full height */
+		display: flex;
+		flex-direction: column;
+		padding: 20px 0; /* Vertical padding */
+		box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+	}
 
-    .original-menu-header {
-        text-align: center;
-        margin-bottom: 20px;
-    }
+	.original-menu-header {
+		text-align: center;
+		margin-bottom: 20px;
+	}
 
-        .original-menu-header h2 {
-            color: #007bff; /* Primary color for header */
-            font-weight: 600;
-        }
+		.original-menu-header h2 {
+			color: #007bff; /* Primary color for header */
+			font-weight: 600;
+		}
 
-    .original-menu-nav {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start; /* Align items to the top */
-    }
+	.original-menu-nav {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start; /* Align items to the top */
+	}
 
-    .original-menu-item {
-        padding: 10px 20px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
+	.original-menu-item {
+		padding: 10px 20px;
+		cursor: pointer;
+		transition: background-color 0.3s ease;
+	}
 
-        .original-menu-item:hover {
-            background-color: rgba(255, 255, 255, 0.1); /* Subtle hover effect */
-        }
+		.original-menu-item:hover {
+			background-color: rgba(255, 255, 255, 0.1); /* Subtle hover effect */
+		}
 
-        .original-menu-item a {
-            color: #e9ecef;
-            text-decoration: none;
-            display: block;
-        }
+		.original-menu-item a {
+			color: #e9ecef;
+			text-decoration: none;
+			display: block;
+		}
 
-            .original-menu-item a.active {
-                background-color: #007bff;
-                color: white;
-                padding: 8px 16px;
-                border-radius: 5px;
-            }
+			.original-menu-item a.active {
+				background-color: #007bff;
+				color: white;
+				padding: 8px 16px;
+				border-radius: 5px;
+			}
 
-    .original-menu-logout {
-        text-align: center;
-        padding: 20px;
-    }
+	.original-menu-logout {
+		text-align: center;
+		padding: 20px;
+	}
 </style>
 
 <div class="original-menu">
-    <div class="original-menu-header">
-        <h2>Menu</h2>
-    </div>
-    <nav class="original-menu-nav">
-        <div class="original-menu-item">
-            <NavLink class="nav-link" href="/cars">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Cars Auction
-            </NavLink>
-        </div>
-        <div class="original-menu-item">
-            <NavLink class="nav-link" href="/favorites">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Favorites
-            </NavLink>
-        </div>
-        <div class="original-menu-item" @onclick="ToggleFiltering">
-            <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Filtering
-        </div>
-        <div class="filtering-fields @(showFiltering ? "show" : "")">
-            <input type="text" placeholder="Brand" @bind="FilterRequest.Brand" class="form-control" />
-            <input type="text" placeholder="Model" @bind="FilterRequest.Model" class="form-control" />
-            <input type="number" placeholder="From Year" @bind="FilterRequest.FromYear" class="form-control" />
-            <input type="number" placeholder="To Year" @bind="FilterRequest.ToYear" class="form-control" />
-            <input type="number" placeholder="Mileage" @bind="FilterRequest.Mileage" class="form-control" />
-            <MudButton OnClick="ApplyFilters" class="btn btn-primary mt-2">Apply Filters</MudButton>
-        </div>
+	<div class="original-menu-header">
+		<h2>Menu</h2>
+	</div>
+	<nav class="original-menu-nav">
+		<div class="original-menu-item">
+			<NavLink class="nav-link" href="/cars">
+				<span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Cars Auction
+			</NavLink>
+		</div>
+		<div class="original-menu-item">
+			<NavLink class="nav-link" href="/favorites">
+				<span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Favorites
+			</NavLink>
+		</div>
+		<div class="original-menu-item" style="margin-left: 12px !important" @onclick="ToggleFiltering">
+			<span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true" ></span> Filtering
+		</div>
+		@if (showFiltering)
+		{
+			  <MudPaper Class=@($"filtering-fields {(showFiltering ? "show" : "")}") Elevation="2" Style="padding: 15px;">
 
-    </nav>
-    <div class="original-menu-logout">
-        <MudButton OnClick="Logout" Color="Color.Primary">Logout</MudButton>
-    </div>
+				<MudTextField Label="Brand" @bind-Value="FilterRequest.Brand" Variant="Variant.Outlined" />
+
+				<MudTextField Label="Model" @bind-Value="FilterRequest.Model" Variant="Variant.Outlined" />
+
+				<MudNumericField T="int?" Label="From Year"  @bind-Value="FilterRequest.FromYear" Variant="Variant.Outlined" />
+
+				<MudNumericField T="int?" Label="To Year" @bind-Value="FilterRequest.ToYear" Variant="Variant.Outlined" />
+
+				<MudNumericField T="int?" Label="Mileage" @bind-Value="FilterRequest.Mileage" Variant="Variant.Outlined" />
+
+				<MudButton OnClick="ApplyFilters" Class="mt-2" Color="Color.Primary" Variant="Variant.Outlined">
+					Apply Filters
+				</MudButton>
+
+			</MudPaper>
+		}
+
+	</nav>
+	<div class="original-menu-logout">
+		<MudButton OnClick="Logout" Color="Color.Primary">Logout</MudButton>
+	</div>
 </div>
 
 @code {
-    private bool showFiltering = false;
-    private CarFiltrationRequest FilterRequest = new CarFiltrationRequest();
+	private bool showFiltering = false;
+	private CarFiltrationRequest FilterRequest = new CarFiltrationRequest();
 
-    private void ToggleFiltering()
-    {
-        showFiltering = !showFiltering;
-    }
+	private void ToggleFiltering()
+	{
+		showFiltering = !showFiltering;
+	}
 
-    private void ApplyFilters()
-    {
+	private void ApplyFilters()
+	{
+		var brand = FilterRequest.Brand ?? "";
+		var model = FilterRequest.Model ?? "";
+		var fromYear = FilterRequest.FromYear?.ToString() ?? "";
+		var toYear = FilterRequest.ToYear?.ToString() ?? "";
+		var mileage = FilterRequest.Mileage?.ToString() ?? "";
 
-        navigation.NavigateTo($"/cars?brand={FilterRequest.Brand}&model={FilterRequest.Model}&fromYear={FilterRequest.FromYear}&toYear={FilterRequest.ToYear}&mileage={FilterRequest.Mileage}");
-        showFiltering = false;
-    }
+		var url = $"{Route.CarsFiltering}?brand={brand}&model={model}&fromYear={fromYear}&toYear={toYear}&mileage={mileage}";
+		navigation.NavigateTo(url);
+		showFiltering = false;
+	}
 
-    private async void Logout()
-    {
-        await localStorageHelper.RemoveToken(TokenStorageName.UserAccess);
-        navigation.NavigateTo(Route.Registration);
-    }
+	private async void Logout()
+	{
+		await localStorageHelper.RemoveToken(TokenStorageName.UserAccess);
+		navigation.NavigateTo(Route.Registration);
+	}
 }

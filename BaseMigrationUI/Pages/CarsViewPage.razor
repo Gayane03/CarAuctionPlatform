@@ -1,5 +1,4 @@
-﻿@* @attribute [Route(Route.Cars)]*@
-@page "/cars"
+﻿@attribute [Route(Route.Cars)]
 @using SharedLibrary.Enum
 @using SharedLibrary.RequestModels
 @using SharedLibrary.ResponseModels
@@ -17,297 +16,292 @@
 </style>
 
 
-	@if (selectedCar == null)
-	{
+@if (selectedCar == null)
+{
 
-
-		<MudText Typo="Typo.h1" Color="Color.Primary">@Title</MudText>
-		<MudGrid>
-			@if (cars == null)
+	<MudText Typo="Typo.h3" Color="Color.Primary">@Title</MudText>
+	<MudGrid>
+		@if (IsLoaded && (cars == null || !cars.Any()))
+		{
+			<MudPaper Class="d-flex justify-center align-center p-2 mt-8"  Square="true">
+				<MudIcon Icon="fas fa-search" Size="Size.Large" Color="Color.Primary" />
+				<MudText Typo="Typo.h5" Align="Align.Left" Class="mt-2" Color="Color.Error">
+					No cars match the current filtering.
+				</MudText>
+				<MudButton Variant="Variant.Text" Color="Color.Primary" Class="mt-3" OnClick="ResetFilters">
+					Reset Filters
+				</MudButton>
+			</MudPaper>
+		}
+		else if (IsLoaded)
+		{
+			@foreach (var car in cars)
 			{
-				<MudProgressCircular Indeterminate />
-			}
-			else
-			{
-				@foreach (var car in cars)
-				{
-					<MudItem xs="12" sm="6" md="4" lg="4" xl="4">
-						<MudCard Elevation="25" Class="rounded-lg">
-							<MudCardMedia Image="@car.ImageUrl" Height="250" Class="mud-object-fit-cover rounded-t-lg">
+				<MudItem xs="12" sm="6" md="4" lg="4" xl="4">
+					<MudCard Elevation="25" Class="rounded-lg">
+						<MudCardMedia Image="@car.ImageUrl" Height="250" Class="mud-object-fit-cover rounded-t-lg">
 
 
-							</MudCardMedia>
+						</MudCardMedia>
 
 
-							<MudGrid Class="mt-1">
-								<MudItem xs="8">
-									<MudText Typo="Typo.h6" Class="mb-1">@car.Name</MudText>
-								</MudItem>
+						<MudGrid Class="mt-1">
+							<MudItem xs="8">
+								<MudText Typo="Typo.h6" Class="mb-1">@car.Name</MudText>
+							</MudItem>
+							@if (favoriteCarIds != null)
+							{
 								<MudItem xs="4" Class="d-flex justify-end">
 									<MudIconButton Icon="@(IsFavorite(car.Id) ? Icons.Material.Filled.Favorite : Icons.Material.Outlined.FavoriteBorder)"
 												   OnClick="() => ToggleFavorite(car.Id)"
 												   Color="@(IsFavorite(car.Id) ? Color.Error : Color.Default)" />
 								</MudItem>
-							</MudGrid>
-							<MudText Typo="Typo.body2" Class="mb-2">@car.Brand @car.Model (@car.Year)</MudText>
-							<MudText Typo="Typo.body2" Class="mb-3" Style="height: 60px;  overflow: hidden; text-overflow: ellipsis;">@car.Description</MudText>
+							}
+						</MudGrid>
+						<MudText Typo="Typo.body2" Class="mb-2">@car.Brand @car.Model (@car.Year)</MudText>
+						<MudText Typo="Typo.body2" Class="mb-3" Style="height: 60px;  overflow: hidden; text-overflow: ellipsis;">@car.Description</MudText>
 
-							<MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="() => SelectCar(car.Id)">Select</MudButton>
+						<MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="() => SelectCar(car.Id)">Select</MudButton>
 
-						</MudCard>
-					</MudItem>
-				}
+					</MudCard>
+				</MudItem>
 			}
-		</MudGrid>
+		}
+	</MudGrid>
 
 
-	}
-	else
-	{
+}
+else
+{
 
-		<div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(to right, #f0f0f0, #d9e4f5); padding: 20px;">
-			<div style="display: flex; flex-wrap: wrap; gap: 30px; max-width: 1200px;">
+	<div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(to right, #f0f0f0, #d9e4f5); padding: 20px;">
+		<div style="display: flex; flex-wrap: wrap; gap: 30px; max-width: 1200px;">
 
-				<!-- Car Details Card -->
-				<MudCard Class="elevated-card" Style="flex: 1; max-width: 600px; padding: 20px; border-radius: 12px;">
-					<MudCardContent>
-						<div style="text-align: center;">
-							<MudText Typo="Typo.h4" Class="text-primary">Car Details</MudText>
-							<MudImage Src="@selectedCar.ImageUrl" Height="280" Style="max-width: 100%; object-fit: contain; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);" />
-						</div>
-						<MudDivider Class="my-2" />
-						<div style="text-align: center; line-height: 1.8;">
-							<MudText Typo="Typo.body1"><b>Brand:</b> @selectedCar.Brand</MudText>
-							<MudText Typo="Typo.body1"><b>Model:</b> @selectedCar.Model</MudText>
-							<MudText Typo="Typo.body1"><b>Year:</b> @selectedCar.Year</MudText>
-							<MudText Typo="Typo.body1"><b>Engine Type:</b> @selectedCar.FuelType</MudText>
-							<MudText Typo="Typo.body1"><b>Engine Size:</b> @selectedCar.EngineSize</MudText>
-							<MudText Typo="Typo.body1"><b>Transmission:</b> @selectedCar.Transmission</MudText>
-							<MudText Typo="Typo.body1"><b>Bid:</b> $@selectedCar.MaxPrice</MudText>
-							<MudText Typo="Typo.body1"><b>Mileage:</b> @selectedCar.Mileage km</MudText>
-							<MudText Typo="Typo.body1"><b>Color:</b> @selectedCar.Color</MudText>
-							<MudText Typo="Typo.body1"><b>Interior Color:</b> @selectedCar.Color</MudText>
-							<MudText Typo="Typo.body1"><b>Body Type:</b> @selectedCar.BodyType</MudText>
-							<MudText Typo="Typo.body1"><b>Drive Type:</b> @selectedCar.DriveType</MudText>
-						</div>
-					</MudCardContent>
-				</MudCard>
+			<!-- Car Details Card -->
+			<MudCard Class="elevated-card" Style="flex: 1; max-width: 600px; padding: 20px; border-radius: 12px;">
+				<MudCardContent>
+					<div style="text-align: center;">
+						<MudText Typo="Typo.h4" Class="text-primary">Car Details</MudText>
+						<MudImage Src="@selectedCar.ImageUrl" Height="280" Style="max-width: 100%; object-fit: contain; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);" />
+					</div>
+					<MudDivider Class="my-2" />
+					<div style="text-align: center; line-height: 1.8;">
+						<MudText Typo="Typo.body1"><b>Brand:</b> @selectedCar.Brand</MudText>
+						<MudText Typo="Typo.body1"><b>Model:</b> @selectedCar.Model</MudText>
+						<MudText Typo="Typo.body1"><b>Year:</b> @selectedCar.Year</MudText>
+						<MudText Typo="Typo.body1"><b>Engine Type:</b> @selectedCar.FuelType</MudText>
+						<MudText Typo="Typo.body1"><b>Engine Size:</b> @selectedCar.EngineSize</MudText>
+						<MudText Typo="Typo.body1"><b>Transmission:</b> @selectedCar.Transmission</MudText>
+						<MudText Typo="Typo.body1"><b>Bid:</b> $@selectedCar.MaxPrice</MudText>
+						<MudText Typo="Typo.body1"><b>Mileage:</b> @selectedCar.Mileage km</MudText>
+						<MudText Typo="Typo.body1"><b>Color:</b> @selectedCar.Color</MudText>
+						<MudText Typo="Typo.body1"><b>Interior Color:</b> @selectedCar.Color</MudText>
+						<MudText Typo="Typo.body1"><b>Body Type:</b> @selectedCar.BodyType</MudText>
+						<MudText Typo="Typo.body1"><b>Drive Type:</b> @selectedCar.DriveType</MudText>
+					</div>
+				</MudCardContent>
+			</MudCard>
 
-				<!-- Auction Card -->
-				<MudCard Class="elevated-card" Style="width: 320px; padding: 20px; border-radius: 12px;">
-					<MudCardContent>
-						<div style="text-align: center;">
-							<MudText Typo="Typo.h5" Class="text-secondary">Auction</MudText>
-						</div>
+			<!-- Auction Card -->
+			<MudCard Class="elevated-card" Style="width: 320px; padding: 20px; border-radius: 12px;">
+				<MudCardContent>
+					<div style="text-align: center;">
+						<MudText Typo="Typo.h5" Class="text-secondary">Auction</MudText>
+					</div>
 
-						<MudDivider Class="my-2" />
+					<MudDivider Class="my-2" />
 
-						<!-- Countdown Timer in Circular Progress -->
-						<div style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px; position: relative;">
-							<MudProgressCircular Indeterminate="false" Color="@BidStatusColor"
-												 Value="@(DateTime.UtcNow < selectedCar.EndDate ? (100 - timeLeft.TotalSeconds / (selectedCar.EndDate - DateTime.UtcNow).TotalSeconds * 100) : 100)"
-												 Style="width: 80px; height: 80px;" />
-							<MudText Typo="Typo.subtitle1" Style="position: absolute; font-weight: bold; text-align: center;">@auctionStatusText</MudText>
-						</div>
+					<!-- Countdown Timer in Circular Progress -->
+					<div style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px; position: relative;">
+						<MudProgressCircular Indeterminate="false" Color="@BidStatusColor"
+											 Value="@(DateTime.UtcNow < selectedCar.EndDate ? (100 - timeLeft.TotalSeconds / (selectedCar.EndDate - DateTime.UtcNow).TotalSeconds * 100) : 100)"
+											 Style="width: 80px; height: 80px;" />
+						<MudText Typo="Typo.subtitle1" Style="position: absolute; font-weight: bold; text-align: center;">@auctionStatusText</MudText>
+					</div>
 
+					<div style="text-align: center; display: flex; flex-direction: column; gap: 10px;">
+						<!-- Limit Date -->
+						<MudText Style="width: 100%; font-weight: bold;">
+							<b>Limit date:</b> @(selectedCar.EndDate.ToString("yyyy-MM-dd HH:mm:ss"))
+						</MudText>
+
+						<!-- Your Last Bid -->
+						<MudText Style="width: 100%; font-weight: bold;">
+							<b>Your last bid:</b> @selectedCar.UserLastPriceOffer
+						</MudText>
+
+						<!-- Last Bid -->
+						<MudText Style="width: 100%; font-weight: bold;">
+							<b>Last max bid:</b> @selectedCar.MaxPrice
+						</MudText>
+					</div>
+
+					@if (selectedCar.EndDate >= DateTime.UtcNow)
+					{
+						<!-- Input for New Price -->
+						<MudNumericField T="decimal" Label="New Price" @bind-Value="newPrice" Variant="Variant.Outlined" Style="width: 100%; margin-bottom: 10px;" />
+
+						<!-- Submit & Increase Bid Buttons -->
 						<div style="text-align: center; display: flex; flex-direction: column; gap: 10px;">
-							<!-- Limit Date -->
-							<MudText Style="width: 100%; font-weight: bold;">
-								<b>Limit date:</b> @(selectedCar.EndDate.ToString("yyyy-MM-dd HH:mm:ss"))
-							</MudText>
-
-							<!-- Your Last Bid -->
-							<MudText Style="width: 100%; font-weight: bold;">
-								<b>Your last bid:</b> @selectedCar.UserLastPriceOffer
-							</MudText>
-
-							<!-- Last Bid -->
-							<MudText Style="width: 100%; font-weight: bold;">
-								<b>Last max bid:</b> @selectedCar.MaxPrice
+							<MudButton OnClick="SubmitPrice" Color="Color.Primary" Variant="Variant.Filled" Style="width: 100%; font-weight: bold;" Disabled="@(timeLeft.TotalSeconds < 0)">Submit Bid</MudButton>
+							<MudButton OnClick="IncreaseBidBy100" Color="Color.Success" Variant="Variant.Filled" Style="width: 100%; font-weight: bold;" Disabled="@(timeLeft.TotalSeconds < 0)">
+								Bid +100
+							</MudButton>
+						</div>
+					}
+					else
+					{
+						<div style="text-align: center; display: flex; flex-direction: column; gap: 10px;">
+							<MudText Style="width: 100%; font-weight: bold;" Color="@BidStatusColor">
+								<b>The car has been sold.</b>
 							</MudText>
 						</div>
-
-						@if (selectedCar.EndDate >= DateTime.UtcNow)
-						{
-							<!-- Input for New Price -->
-							<MudNumericField T="decimal" Label="New Price" @bind-Value="newPrice" Variant="Variant.Outlined" Style="width: 100%; margin-bottom: 10px;" />
-
-							<!-- Submit & Increase Bid Buttons -->
-							<div style="text-align: center; display: flex; flex-direction: column; gap: 10px;">
-								<MudButton OnClick="SubmitPrice" Color="Color.Primary" Variant="Variant.Filled" Style="width: 100%; font-weight: bold;" Disabled="@(timeLeft.TotalSeconds < 0)">Submit Bid</MudButton>
-								<MudButton OnClick="IncreaseBidBy100" Color="Color.Success" Variant="Variant.Filled" Style="width: 100%; font-weight: bold;" Disabled="@(timeLeft.TotalSeconds < 0)">
-									Bid +100
-								</MudButton>
-							</div>
-						}
-						else
-						{
-							<div style="text-align: center; display: flex; flex-direction: column; gap: 10px;">
-								<MudText Style="width: 100%; font-weight: bold;" Color="@BidStatusColor">
-									<b>The car has been sold.</b>
-								</MudText>
-							</div>
-						}
-					</MudCardContent>
-				</MudCard>
-			</div>
+					}
+				</MudCardContent>
+			</MudCard>
 		</div>
-	}
+	</div>
+}
 
 
 @code {
 
-    [Parameter]
-    public bool ForFavoritePage { get; set; } = false;
 
-    [Parameter]
-    public string Title { get; set; } = "Cars Auction";
+	[Parameter]
+	public CarFiltrationRequest? CarFiltrationRequest { get; set; } = new();
 
-    private List<CarViewResponse> cars;
-    private CarResponse selectedCar;
-    private decimal newPrice;
+	[Parameter]
+	public bool ForFavoritePage { get; set; } = false;
 
-    private Color BidStatusColor => (selectedCar.EndDate >= DateTime.UtcNow) ? Color.Success : Color.Error;
+	[Parameter]
+	public string Title { get; set; } = "Cars List";
 
-    private TimeSpan timeLeft;
-    private string auctionStatusText = "";
+	private bool IsLoaded = false;
 
-    private System.Timers.Timer timer;
+	private List<CarViewResponse> cars;
+	private CarResponse selectedCar;
+	private decimal newPrice;
 
-    List<int> favoriteCarIds;
+	private Color BidStatusColor => (selectedCar.EndDate >= DateTime.UtcNow) ? Color.Success : Color.Error;
 
-    private CarFiltrationRequest carFiltrationRequest = new CarFiltrationRequest();
+	private TimeSpan timeLeft;
+	private string auctionStatusText = "";
 
-    string token;
+	private System.Timers.Timer timer;
 
-    private async Task ToggleFavorite(int carId)
-    {
-        var isFavorite = false;
-
-        try
-        {
-            if (favoriteCarIds.Contains(carId))
-            {
-                favoriteCarIds.Remove(carId);
-            }
-            else
-            {
-                favoriteCarIds.Add(carId);
-                isFavorite = true;
-            }
-
-            var response = await apiController.ChangeCarFavoriteState(token, new CarFavoriteRequest() { CarId = carId, IsFavorite = isFavorite });
-            await RefreshCars();
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Please contact with support team", MudBlazor.Severity.Error);
-        }
-
-    }
-
-    private bool IsFavorite(int carId)
-    {
-        return favoriteCarIds.Contains(carId);
-    }
+	List<int> favoriteCarIds;
 
 
-    private void UpdateAuctionStatus()
-    {
-        var now = DateTime.UtcNow;
-        var auctionEnd = selectedCar.EndDate;
+	string token;
 
-        if (now < auctionEnd)
-        {
-            timeLeft = auctionEnd - now;
-            auctionStatusText = $"{timeLeft.Hours:D2}:{timeLeft.Minutes:D2}:{timeLeft.Seconds:D2}";
+	private async Task ToggleFavorite(int carId)
+	{
+		var isFavorite = false;
 
-        }
-        else
-        {
-            auctionStatusText = $"Auction Finished\nFinal Price: ${selectedCar.MaxPrice}";
-
-            timer?.Stop(); // Stop updating when auction ends
-        }
-        StateHasChanged(); // Refresh UI
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
-        var queryStrings = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
-
-		carFiltrationRequest = new CarFiltrationRequest(); // Reset filters
-
-		if (queryStrings.TryGetValue("brand", out var brand)) carFiltrationRequest.Brand = brand;
-		if (queryStrings.TryGetValue("model", out var model)) carFiltrationRequest.Model = model;
-		if (queryStrings.TryGetValue("fromYear", out var fromYear))
+		try
 		{
-			if (int.TryParse(fromYear, out int fromYearInt))
+			if (favoriteCarIds.Contains(carId))
 			{
-				carFiltrationRequest.FromYear = fromYearInt;
+				favoriteCarIds.Remove(carId);
 			}
-		}
-
-		if (queryStrings.TryGetValue("toYear", out var toYear))
-		{
-			if (int.TryParse(toYear, out int toYearInt))
+			else
 			{
-				carFiltrationRequest.ToYear = toYearInt;
-			}
-		}
-		if (queryStrings.TryGetValue("mileage", out var mileage))
-		{
-			if (int.TryParse(mileage, out int mileageInt))
-			{
-				carFiltrationRequest.Mileage = mileageInt;
+				favoriteCarIds.Add(carId);
+				isFavorite = true;
 			}
 
+			var response = await apiController.ChangeCarFavoriteState(token, new CarFavoriteRequest() { CarId = carId, IsFavorite = isFavorite });
+			await RefreshCars();
+		}
+		catch (Exception)
+		{
+			Snackbar.Add("Please contact with support team", MudBlazor.Severity.Error);
 		}
 
-		await RefreshCars(); // Refresh data with new filters
+	}
+
+	private bool IsFavorite(int carId)
+	{
+		return favoriteCarIds != null && favoriteCarIds.Contains(carId);
 	}
 
 
-
-	private async Task RefreshCars()
+	private void UpdateAuctionStatus()
 	{
-		var result = await apiController.GetCarsView(token,carFiltrationRequest);
+		var now = DateTime.UtcNow;
+		var auctionEnd = selectedCar.EndDate;
 
-		cars = await responseMessageUtile.HandleResponse<List<CarViewResponse>>(result);
-
-		if (ForFavoritePage)
+		if (now < auctionEnd)
 		{
-			cars = cars.Where(cars => cars.IsFavorite).ToList();
+			timeLeft = auctionEnd - now;
+			auctionStatusText = $"{timeLeft.Hours:D2}:{timeLeft.Minutes:D2}:{timeLeft.Seconds:D2}";
+
 		}
+		else
+		{
+			auctionStatusText = $"Auction Finished\nFinal Price: ${selectedCar.MaxPrice}";
+
+			timer?.Stop(); // Stop updating when auction ends
+		}
+		StateHasChanged(); // Refresh UI
+	}
+
+
+	public async Task RefreshCars()
+	{
+		try
+		{
+			var result = await apiController.GetCarsView(token, CarFiltrationRequest);
+
+			cars = await responseMessageUtile.HandleResponse<List<CarViewResponse>>(result);
+			if (cars is not null && cars.Any())
+			{
+				favoriteCarIds = cars.Where(cars => cars.IsFavorite).Select(car => car.Id).ToList();
+			}
+			if (ForFavoritePage)
+			{
+				selectedCar = null;
+				cars = cars.Where(cars => cars.IsFavorite).ToList();
+			}
+		}
+		catch (Exception ex)
+		{
+			// Snackbar.Add(ex.Message, MudBlazor.Severity.Normal);
+			// return;
+		}
+
+	}
+
+	public async Task ResetFilters()
+	{
+		CarFiltrationRequest = null;
+		await RefreshCars();
 	}
 
 	protected override async Task OnInitializedAsync()
 	{
-		selectedCar = null;
-		token = await GetAccessToken();
-		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
 
-		var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
-        var queryStrings = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
-			
-        if (queryStrings.TryGetValue("brand", out var brand)) carFiltrationRequest.Brand = brand;
-        if (queryStrings.TryGetValue("model", out var model)) carFiltrationRequest.Model = model;
-        if (queryStrings.TryGetValue("fromYear", out var fromYear)) carFiltrationRequest.FromYear = int.Parse(fromYear);
-        if (queryStrings.TryGetValue("toYear", out var toYear)) carFiltrationRequest.ToYear = int.Parse(toYear);
-        if (queryStrings.TryGetValue("mileage", out var mileage)) carFiltrationRequest.Mileage = int.Parse(mileage);
-
-		await RefreshCars();
-
-		favoriteCarIds = cars.Where(cars => cars.IsFavorite).Select(car => car.Id).ToList();
-
-		if (selectedCar != null)
+		try
 		{
-			UpdateAuctionStatus();
-			timer = new System.Timers.Timer(1000); // Update every second
-			timer.Elapsed += (sender, e) => InvokeAsync(UpdateAuctionStatus);
-			timer.Start();
+			selectedCar = null;
+			token = await GetAccessToken();
+			Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+
+			await RefreshCars();			
+
+			if (selectedCar != null)
+			{
+				UpdateAuctionStatus();
+				timer = new System.Timers.Timer(1000); // Update every second
+				timer.Elapsed += (sender, e) => InvokeAsync(UpdateAuctionStatus);
+				timer.Start();
+			}
 		}
+		catch (Exception ex)
+		{
+			Snackbar.Add("Please contact with support team", MudBlazor.Severity.Error);
+		}
+		IsLoaded = true;
 	}
 
 	private async Task IncreaseBidBy100()

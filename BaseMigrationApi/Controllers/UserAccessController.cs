@@ -33,23 +33,6 @@ namespace BaseMigrationApi.Controllers
 			return Ok(true);
         }
 
-		//[HttpGet("test")]
-		//public bool Test(string token)
-		//{
-		//	try
-		//	{
-		//		var a = jwtTokenHandlerService.ValidateJwtToken(token);
-
-		//		return true;
-		//	}
-		//	catch (Exception)
-		//	{
-
-		//		return false;
-		//	}
-
-		//}
-
 		[HttpPost("getCars")]
 		public async Task<IActionResult> GetCars([FromBody] CarFiltrationRequest? carFiltrationRequest)
 		{
