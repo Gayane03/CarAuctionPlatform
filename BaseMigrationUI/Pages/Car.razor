@@ -1,0 +1,395 @@
+﻿@using SharedLibrary.ResponseModels
+@* @attribute [Route("car/{id:int}")] *@
+@page "/car/{id:int}";
+@using SharedLibrary.Enum
+@using SharedLibrary.RequestModels
+@inject NavigationManager navigationManager;
+@inject ApiController apiController;
+@inject ResponseMessageUtile responseMessageUtile;
+@inject LocalStorageHelper localStorageHelper;
+@inject ISnackbar Snackbar;
+@layout CarLayout;
+
+
+
+@if (selectedCar != null)
+{
+	<div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(to right, #f0f0f0, #d9e4f5); padding: 20px;">
+		<div style="display: flex; flex-wrap: wrap; gap: 30px; max-width: 1200px;">
+
+			<!-- Car Details Card -->
+			<MudCard Class="elevated-card" Style="flex: 1; max-width: 600px; padding: 20px; border-radius: 12px;">
+				<MudCardContent>
+					<div style="text-align: center;">
+						<MudText Typo="Typo.h4" Class="text-primary">Car Details</MudText>
+						<MudImage Src="@selectedCar.ImageUrl" Height="280" Style="max-width: 100%; object-fit: contain; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);" />
+					</div>
+					<MudDivider Class="my-2" />
+					<div style="text-align: center; line-height: 1.8;">
+						<MudText Typo="Typo.body1"><b>Brand:</b> @selectedCar.Brand</MudText>
+						<MudText Typo="Typo.body1"><b>Model:</b> @selectedCar.Model</MudText>
+						<MudText Typo="Typo.body1"><b>Year:</b> @selectedCar.Year</MudText>
+						<MudText Typo="Typo.body1"><b>Engine Type:</b> @selectedCar.FuelType</MudText>
+						<MudText Typo="Typo.body1"><b>Engine Size:</b> @selectedCar.EngineSize</MudText>
+						<MudText Typo="Typo.body1"><b>Transmission:</b> @selectedCar.Transmission</MudText>
+						<MudText Typo="Typo.body1"><b>Bid:</b> $@selectedCar.MaxPrice</MudText>
+						<MudText Typo="Typo.body1"><b>Mileage:</b> @selectedCar.Mileage km</MudText>
+						<MudText Typo="Typo.body1"><b>Color:</b> @selectedCar.Color</MudText>
+						<MudText Typo="Typo.body1"><b>Interior Color:</b> @selectedCar.Color</MudText>
+						<MudText Typo="Typo.body1"><b>Body Type:</b> @selectedCar.BodyType</MudText>
+						<MudText Typo="Typo.body1"><b>Drive Type:</b> @selectedCar.DriveType</MudText>
+					</div>
+				</MudCardContent>
+			</MudCard>
+
+		 	<!-- Auction Card -->
+			<MudCard Class="elevated-card" Style="width: 320px; padding: 20px; border-radius: 12px;">
+				<MudCardContent>
+					<div style="text-align: center;">
+						<MudText Typo="Typo.h5" Class="text-secondary">Auction</MudText>
+					</div>
+
+					<MudDivider Class="my-2" />
+
+				 	<!-- Countdown Timer in Circular Progress -->
+					<div style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px; position: relative;">
+						<MudProgressCircular Indeterminate="false" Color="@BidStatusColor"
+											 Value="@(DateTime.UtcNow < selectedCar.EndDate ? (100 - timeLeft.TotalSeconds / (selectedCar.EndDate - DateTime.UtcNow).TotalSeconds * 100) : 100)"
+											 Style="width: 80px; height: 80px;" />
+						<MudText Typo="Typo.subtitle1" Style="position: absolute; font-weight: bold; text-align: center;">@auctionStatusText</MudText>
+					</div> 
+
+					<div style="text-align: center; display: flex; flex-direction: column; gap: 10px;">
+						<!-- Limit Date -->
+						@if (selectedCar.EndDate >= DateTime.UtcNow)
+						{
+							<MudText Style="width: 100%; font-weight: bold;">
+							<b>Limit date:</b> @countdownText
+						    </MudText>
+						}
+
+						<!-- Your Last Bid -->
+						<MudText Style="width: 100%; font-weight: bold;">
+							<b>Your last bid:</b> @selectedCar.UserLastPriceOffer
+						</MudText>
+
+						<!-- Last Bid -->
+						<MudText Style="width: 100%; font-weight: bold;">
+							<b>Last max bid:</b> @selectedCar.MaxPrice
+						</MudText>
+					</div>
+
+					@if (selectedCar.EndDate >= DateTime.UtcNow)
+					{
+						<!-- Input for New Price -->
+						<MudNumericField T="decimal" Label="New Price" @bind-Value="newPrice" Variant="Variant.Outlined" Style="width: 100%; margin-bottom: 10px;" />
+
+						<!-- Submit & Increase Bid Buttons -->
+						<div style="text-align: center; display: flex; flex-direction: column; gap: 10px;">
+							<MudButton OnClick="SubmitPrice" Color="Color.Primary" Variant="Variant.Filled" Style="width: 100%; font-weight: bold;" Disabled="@(timeLeft.TotalSeconds < 0)">Submit Bid</MudButton>
+							<MudButton OnClick="IncreaseBidBy100" Color="Color.Success" Variant="Variant.Filled" Style="width: 100%; font-weight: bold;" Disabled="@(timeLeft.TotalSeconds < 0)">
+								Bid +100
+							</MudButton>
+						</div>
+					}
+					else
+					{
+						<div style="text-align: center; display: flex; flex-direction: column; gap: 10px;">
+							<MudText Style="width: 100%; font-weight: bold;" Color="@BidStatusColor">
+								<b>The car has been sold.</b>
+							</MudText>
+						</div>
+					}
+				</MudCardContent>
+			</MudCard> 
+		</div>
+	</div>
+}
+
+@code {
+
+	[Parameter]
+	[SupplyParameterFromQuery]
+	public int? id { get; set; }
+
+	private decimal newPrice;
+
+	private Color BidStatusColor => (selectedCar.EndDate >= DateTime.UtcNow) ? Color.Success : Color.Error;
+
+	private TimeSpan timeLeft;
+	private string auctionStatusText = "";
+
+	private System.Timers.Timer timer;
+
+	List<int> favoriteCarIds;
+
+
+	string token;
+
+	private CarResponse selectedCar;
+
+	private string countdownText;
+	private TimeSpan timeLeft1;
+	private System.Timers.Timer timer1;
+
+	public DateTime finishDate;
+	private bool IsLoaded = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+
+		try
+		{
+			token = await GetAccessToken();
+
+			if (id is not null && id.Value is not default(int))
+			{
+				await SelectCar(id.Value);
+				await StartCountdown();
+				UpdateAuctionStatus();
+				timer = new System.Timers.Timer(1000); // Update every second
+				timer.Elapsed += (sender, e) => InvokeAsync(UpdateAuctionStatus);
+				timer.Start();
+
+			}
+		}
+		catch (Exception ex)
+		{
+			Snackbar.Add("Please contact with support team", MudBlazor.Severity.Error);
+		}
+
+		IsLoaded = true;
+	}
+
+
+	private async Task<string> GetAccessToken()
+	{
+		try
+		{
+			return await localStorageHelper.GetToken(TokenStorageName.UserAccess);
+		}
+		catch (SystemException ex)
+		{
+			Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
+		}
+		catch (Exception ex)
+		{
+			Snackbar.Add("Please contact with support team", MudBlazor.Severity.Error);
+		}
+
+		return null;
+	}
+
+	private void UpdateAuctionStatus()
+	{
+		var now = DateTime.UtcNow;
+		var auctionEnd = selectedCar.EndDate;
+
+		if (now < auctionEnd)
+		{
+			timeLeft = auctionEnd - now;
+			auctionStatusText = $"{timeLeft.Hours:D2}:{timeLeft.Minutes:D2}:{timeLeft.Seconds:D2}";
+
+		}
+		else
+		{
+			auctionStatusText = $"Auction Finished\nFinal Price: ${selectedCar.MaxPrice}";
+
+			timer?.Stop(); // Stop updating when auction ends
+		}
+		StateHasChanged(); // Refresh UI
+	}
+
+
+	private CancellationTokenSource cancellationTokenSource = new();
+
+	// protected override async Task OnInitializedAsync()
+	// {
+	// 	await StartCountdown();
+	// }
+	int seconds;
+
+	int years;
+	int months;
+	int days;
+	int hours;
+	int minutes;
+
+	bool lastSeconds = false;
+	private async Task StartCountdown()
+	{
+		try
+		{
+			while (!cancellationTokenSource.Token.IsCancellationRequested)
+			{
+				if (selectedCar != null && !lastSeconds)
+				{
+					DateTime now = DateTime.UtcNow;
+					DateTime endDate = selectedCar.EndDate;
+
+					years = endDate.Year - now.Year;
+					months = endDate.Month - now.Month;
+					days = endDate.Day - now.Day;
+					hours = endDate.Hour - now.Hour;
+					minutes = endDate.Minute - now.Minute;
+					seconds = endDate.Second - now.Second;
+
+					if (seconds < 0)
+					{
+						minutes--;
+						seconds += 60;
+					}
+
+					if (minutes < 0)
+					{
+						hours--;
+						minutes += 60;
+					}
+
+					if (hours < 0)
+					{
+						days--;
+						hours += 24;
+					}
+
+					if (days < 0)
+					{
+						months--;
+						days += DateTime.DaysInMonth(now.Year, now.Month);
+					}
+
+					if (months < 0)
+					{
+						years--;
+						months += 12;
+					}
+
+					countdownText = $"{years}Y {months}M {days}D {hours:D2}:{minutes:D2}:{seconds:D2}";
+					StateHasChanged();
+				}
+				else
+				{
+					seconds += 10;
+					countdownText = $"{years}Y {months}M {days}D {hours:D2}:{minutes:D2}:{seconds:D2}";
+					StateHasChanged();
+				}
+
+				await Task.Delay(1000, cancellationTokenSource.Token); // Wait 1 second
+			}
+		}
+		catch (TaskCanceledException)
+		{
+			// Ignore if the task is canceled
+		}
+	}
+
+	public void Dispose()
+	{
+		cancellationTokenSource.Cancel();
+		cancellationTokenSource.Dispose();
+	}
+
+	// protected override async Task OnAfterRenderAsync(bool firstRender)
+	// {
+	// 	try
+	// 	{
+	// 		if (selectedCar != null)
+	// 		{
+
+	// 			DateTime now = DateTime.UtcNow;
+	// 			DateTime endDate = selectedCar.EndDate;
+
+	// 			int years = endDate.Year - now.Year;
+	// 			int months = endDate.Month - now.Month;
+	// 			int days = endDate.Day - now.Day;
+
+	// 			int hours = endDate.Hour - now.Hour;
+	// 			int minutes = endDate.Minute - now.Minute;
+	// 			int seconds = endDate.Second - now.Second;
+
+
+
+	// 			if (seconds < 0)
+	// 			{
+	// 				minutes--;
+	// 				seconds += 60;
+	// 			}
+
+	// 			if (minutes < 0)
+	// 			{
+	// 				hours--;
+	// 				minutes += 60;
+	// 			}
+	// 			if (hours < 0)
+	// 			{
+	// 				days--;
+	// 				hours += 1;
+	// 			}
+
+	// 			if (days < 0)
+	// 			{
+	// 				months--;
+	// 				days += DateTime.DaysInMonth(now.Year, now.Month);
+	// 			}
+
+	// 			if (months < 0)
+	// 			{
+	// 				years--;
+	// 				months += 12;
+	// 			}
+
+
+	// 			countdownText = $"{years}Y {months}M {days}D {hours:D2}:{minutes:D2}:{seconds:D2}";
+
+	// 			// Set finishDate properly using calculated components
+	// 			// finishDate = new DateTime(years, months, days, hours, minutes, seconds);
+	// 			 StateHasChanged();
+
+	// 		}
+
+	// 		// StartCountdown();
+	// 	}
+	// 	catch (Exception ex)
+	// 	{
+
+
+	// 	}
+
+
+	// }
+
+	private async Task SubmitPrice()
+	{
+		var request = new CarPriceRequest { CarId = selectedCar.Id, Price = newPrice };
+		var token = await GetAccessToken();
+
+		var response = await apiController.AddNewPriceForCar(token, request);
+		var isOkayRequested = await responseMessageUtile.HandleResponse<bool>(response);
+
+		if (isOkayRequested)
+		{
+			await SelectCar(selectedCar.Id); // Refresh car details
+		}
+	}
+
+	private async Task IncreaseBidBy100()
+	{
+		newPrice = selectedCar.MaxPrice + 100; // Set new price to MaxPrice + 100
+
+		if(years + months + days+hours+minutes==0 && seconds<= 0)
+		{
+			lastSeconds = true;
+		}
+		await SubmitPrice(); // Submit the new bid
+	}
+
+	private async Task SelectCar(int carId)
+	{
+		var token = await GetAccessToken();
+
+		var result = await apiController.GetCar(token, carId);
+		selectedCar = await responseMessageUtile.HandleResponse<CarResponse>(result);
+	}
+
+}
