@@ -54,14 +54,14 @@
 				 	<!-- Countdown Timer in Circular Progress -->
 					<div style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px; position: relative;">
 						<MudProgressCircular Indeterminate="false" Color="@BidStatusColor"
-											 Value="@(DateTime.UtcNow < selectedCar.EndDate ? (100 - timeLeft.TotalSeconds / (selectedCar.EndDate - DateTime.UtcNow).TotalSeconds * 100) : 100)"
+											 Value="@(100)"
 											 Style="width: 80px; height: 80px;" />
 						<MudText Typo="Typo.subtitle1" Style="position: absolute; font-weight: bold; text-align: center;">@auctionStatusText</MudText>
 					</div> 
 
 					<div style="text-align: center; display: flex; flex-direction: column; gap: 10px;">
 						<!-- Limit Date -->
-						@if (selectedCar.EndDate >= DateTime.UtcNow)
+						@if (finishedLimit > 0)
 						{
 							<MudText Style="width: 100%; font-weight: bold;">
 							<b>Limit date:</b> @countdownText
@@ -79,7 +79,7 @@
 						</MudText>
 					</div>
 
-					@if (selectedCar.EndDate >= DateTime.UtcNow)
+					@if (finishedLimit > 0)
 					{
 						<!-- Input for New Price -->
 						<MudNumericField T="decimal" Label="New Price" @bind-Value="newPrice" Variant="Variant.Outlined" Style="width: 100%; margin-bottom: 10px;" />
@@ -114,7 +114,7 @@
 
 	private decimal newPrice;
 
-	private Color BidStatusColor => (selectedCar.EndDate >= DateTime.UtcNow) ? Color.Success : Color.Error;
+	private Color BidStatusColor => (finishedLimit > 0) ? Color.Success : Color.Error;
 
 	private TimeSpan timeLeft;
 	private string auctionStatusText = "";
@@ -217,63 +217,47 @@
 	int minutes;
 
 	bool lastSeconds = false;
+	int finishedLimit;
+
+	DateTime now;
+	DateTime endDate;
+	TimeSpan remaining;
+
+
 	private async Task StartCountdown()
 	{
 		try
 		{
 			while (!cancellationTokenSource.Token.IsCancellationRequested)
 			{
-				if (selectedCar != null && !lastSeconds)
+				if (selectedCar != null)
 				{
-					DateTime now = DateTime.UtcNow;
-					DateTime endDate = selectedCar.EndDate;
+					now = DateTime.UtcNow;
+					endDate = selectedCar.EndDate; 
 
-					years = endDate.Year - now.Year;
-					months = endDate.Month - now.Month;
-					days = endDate.Day - now.Day;
-					hours = endDate.Hour - now.Hour;
-					minutes = endDate.Minute - now.Minute;
-					seconds = endDate.Second - now.Second;
+					remaining = endDate - now;
 
-					if (seconds < 0)
+					years = remaining.Days / 365;
+					months = (remaining.Days % 365) / 30;
+					days = (remaining.Days % 365) % 30;
+					hours = remaining.Hours;
+					minutes = remaining.Minutes;
+					
+
+					if (lastSeconds)
 					{
-						minutes--;
-						seconds += 60;
+						seconds--;
 					}
-
-					if (minutes < 0)
+					else
 					{
-						hours--;
-						minutes += 60;
-					}
-
-					if (hours < 0)
-					{
-						days--;
-						hours += 24;
-					}
-
-					if (days < 0)
-					{
-						months--;
-						days += DateTime.DaysInMonth(now.Year, now.Month);
-					}
-
-					if (months < 0)
-					{
-						years--;
-						months += 12;
+						seconds = remaining.Seconds;
 					}
 
 					countdownText = $"{years}Y {months}M {days}D {hours:D2}:{minutes:D2}:{seconds:D2}";
 					StateHasChanged();
 				}
-				else
-				{
-					seconds += 10;
-					countdownText = $"{years}Y {months}M {days}D {hours:D2}:{minutes:D2}:{seconds:D2}";
-					StateHasChanged();
-				}
+				
+				finishedLimit = years + months + days + hours + minutes + seconds;
 
 				await Task.Delay(1000, cancellationTokenSource.Token); // Wait 1 second
 			}
@@ -290,74 +274,6 @@
 		cancellationTokenSource.Dispose();
 	}
 
-	// protected override async Task OnAfterRenderAsync(bool firstRender)
-	// {
-	// 	try
-	// 	{
-	// 		if (selectedCar != null)
-	// 		{
-
-	// 			DateTime now = DateTime.UtcNow;
-	// 			DateTime endDate = selectedCar.EndDate;
-
-	// 			int years = endDate.Year - now.Year;
-	// 			int months = endDate.Month - now.Month;
-	// 			int days = endDate.Day - now.Day;
-
-	// 			int hours = endDate.Hour - now.Hour;
-	// 			int minutes = endDate.Minute - now.Minute;
-	// 			int seconds = endDate.Second - now.Second;
-
-
-
-	// 			if (seconds < 0)
-	// 			{
-	// 				minutes--;
-	// 				seconds += 60;
-	// 			}
-
-	// 			if (minutes < 0)
-	// 			{
-	// 				hours--;
-	// 				minutes += 60;
-	// 			}
-	// 			if (hours < 0)
-	// 			{
-	// 				days--;
-	// 				hours += 1;
-	// 			}
-
-	// 			if (days < 0)
-	// 			{
-	// 				months--;
-	// 				days += DateTime.DaysInMonth(now.Year, now.Month);
-	// 			}
-
-	// 			if (months < 0)
-	// 			{
-	// 				years--;
-	// 				months += 12;
-	// 			}
-
-
-	// 			countdownText = $"{years}Y {months}M {days}D {hours:D2}:{minutes:D2}:{seconds:D2}";
-
-	// 			// Set finishDate properly using calculated components
-	// 			// finishDate = new DateTime(years, months, days, hours, minutes, seconds);
-	// 			 StateHasChanged();
-
-	// 		}
-
-	// 		// StartCountdown();
-	// 	}
-	// 	catch (Exception ex)
-	// 	{
-
-
-	// 	}
-
-
-	// }
 
 	private async Task SubmitPrice()
 	{
@@ -377,10 +293,14 @@
 	{
 		newPrice = selectedCar.MaxPrice + 100; // Set new price to MaxPrice + 100
 
-		if(years + months + days+hours+minutes==0 && seconds<= 0)
+		if(years + months + days+ hours + minutes <= 0 && seconds <= 10)
 		{
 			lastSeconds = true;
+			seconds += 10;  
+
+			StateHasChanged(); // Refresh UI			
 		}
+
 		await SubmitPrice(); // Submit the new bid
 	}
 
